@@ -1,5 +1,10 @@
 beeswarm NEWS
 
+Changes in version 0.2.1 (2015-08-26)
+
+- Corrected NAMESPACE and DESCRIPTION to properly indicate Imports and to remove unnecessary Depends.
+
+
 Changes in version 0.2.0 (2015-05-04)
 
 - New arguments "side" and "priority" for beeswarm, swarmx, and swarmy. "side" allows swarms to grow on only one side rather than both sides. "priority" controls the order in which swarms are built, thus affecting the appearance of the plot. Thanks to Jon Lake and Brad Stiritz for suggestions.

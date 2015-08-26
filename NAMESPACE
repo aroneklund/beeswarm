@@ -6,3 +6,7 @@ S3method(beeswarm, formula)
 S3method(bxplot, default)
 S3method(bxplot, formula)
 
+importFrom("grDevices", "extendrange", "xy.coords")
+importFrom("graphics", "axis", "box", "boxplot", "par", "plot", "points", "segments", "xinch", "yinch")
+importFrom("stats", "approx", "density", "na.omit", "quantile", "runif")
+importFrom("utils", "head", "tail")
