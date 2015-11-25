@@ -1,5 +1,11 @@
 beeswarm NEWS
 
+Changes in version 0.2.2 (2015-11-25)
+
+- Check that glim, dlim, xlim, ylim have length 2, thus avoiding confusing errors.
+- New argument "axes" (previously, trying to specify "axes" in ... would cause an error).
+
+
 Changes in version 0.2.1 (2015-08-26)
 
 - Corrected NAMESPACE and DESCRIPTION to properly indicate Imports and to remove unnecessary Depends.
