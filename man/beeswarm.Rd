@@ -99,8 +99,8 @@ When using the \code{"swarm"} method, \code{priority} controls the order in whic
 
 \examples{ 
 ## NOTE: These examples are designed for a default 7-inch-square graphics device and
-## default plotting parameters. Using other sizes/parameters may render these examples
-## somewhat confusing.
+## default plotting parameters. Using other sizes/parameters may reduce the effectiveness
+## of these examples.
   
   ## One of the examples from 'stripchart'
   beeswarm(decrease ~ treatment,
@@ -131,9 +131,9 @@ When using the \code{"swarm"} method, \code{priority} controls the order in whic
     title = "Censored", pch = 16, col = 1:2)
 
   ## The list interface
-  distributions <- list(runif = runif(100, min = -3, max = 3), 
-                        rnorm = rnorm(100),
-                        rlnorm = rlnorm(100, sdlog = 0.5))
+  distributions <- list(runif = runif(200, min = -3, max = 3), 
+                        rnorm = rnorm(200),
+                        rlnorm = rlnorm(200, sdlog = 0.5))
   beeswarm(distributions, col = 2:4)
 
   ## Demonstrate 'pwcol' with the list interface 
