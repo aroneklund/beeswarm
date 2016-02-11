@@ -98,6 +98,10 @@ When using the \code{"swarm"} method, \code{priority} controls the order in whic
 \seealso{ \code{\link{stripchart}}, \code{\link{boxplot}} }
 
 \examples{ 
+## NOTE: These examples are designed for a default 7-inch-square graphics device and
+## default plotting parameters. Using other sizes/parameters may render these examples
+## somewhat confusing.
+  
   ## One of the examples from 'stripchart'
   beeswarm(decrease ~ treatment,
     data = OrchardSprays, log = TRUE, 
