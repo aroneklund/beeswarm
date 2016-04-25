@@ -1,5 +1,11 @@
 beeswarm NEWS
 
+
+Changes in version 0.2.3 (2016-04-25)
+
+- Fixed a bug in which specifying non-default "corral" and "side" arguments would result in unexpected results. (Issue #2)
+
+
 Changes in version 0.2.2 (2015-11-25)
 
 - Check that glim, dlim, xlim, ylim have length 2, thus avoiding confusing errors.

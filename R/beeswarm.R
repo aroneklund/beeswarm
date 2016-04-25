@@ -256,18 +256,23 @@ beeswarm.default <- function(x,
       stopifnot(length(corralWidth) == 1)
       stopifnot(corralWidth > 0)
     }
-    halfCorralWidth <- corralWidth / 2
+    corralLo <- (side - 1) * corralWidth / 2
+    corralHi <- (side + 1) * corralWidth / 2
     if(corral == 'gutter') {
-      g.offset <- lapply(g.offset, function(zz) pmin(halfCorralWidth, pmax(-halfCorralWidth, zz)))
+      g.offset <- lapply(g.offset, function(zz) pmin(corralHi, pmax(corralLo, zz)))
     }
     if(corral == 'wrap') {
-      g.offset <- lapply(g.offset, function(zz) ((zz + halfCorralWidth) %% (halfCorralWidth * 2)) - halfCorralWidth)
+      if(side == -1) { ## special case with side=-1: reverse the corral to avoid artifacts at zero
+        g.offset <- lapply(g.offset, function(zz) corralHi - ((corralHi - zz) %% corralWidth))
+      } else {
+        g.offset <- lapply(g.offset, function(zz) ((zz - corralLo) %% corralWidth) + corralLo)
+      }
     }  
     if(corral == 'random') {
-      g.offset <- lapply(g.offset, function(zz) ifelse(zz > halfCorralWidth | zz < -halfCorralWidth, runif(length(zz), -halfCorralWidth, halfCorralWidth), zz))
+      g.offset <- lapply(g.offset, function(zz) ifelse(zz > corralHi | zz < corralLo, yes = runif(length(zz), corralLo, corralHi), no = zz))
     }
     if(corral == 'omit') {
-      g.offset <- lapply(g.offset, function(zz) ifelse(zz > halfCorralWidth, NA, ifelse(zz < -halfCorralWidth, NA, zz)))
+      g.offset <- lapply(g.offset, function(zz) ifelse(zz > corralHi | zz < corralLo, yes = NA, no = zz))
     }
   }
   
