@@ -13,7 +13,7 @@ Create a bee swarm plot.  A bee swarm plot is a one-dimensional scatter plot sim
 beeswarm(x, \dots)
 
 \method{beeswarm}{formula}(formula, data = NULL, subset, na.action = NULL, 
-         pwpch = NULL, pwcol = NULL, pwbg = NULL, dlab, glab, \dots)
+         pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, \dots)
 
 \method{beeswarm}{default}(x, 
     method = c("swarm", "center", "hex", "square"), 
@@ -24,7 +24,7 @@ beeswarm(x, \dots)
     corralWidth, side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
     pch = par("pch"), col = par("col"), bg = NA, 
-    pwpch = NULL, pwcol = NULL, pwbg = NULL,
+    pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
     do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE,
     xlim = NULL, ylim = NULL, dlim = NULL, glim = NULL,
     xlab = NULL, ylab = NULL, dlab = "", glab = "",
@@ -45,17 +45,17 @@ beeswarm(x, \dots)
   \item{x}{ A numeric vector, or a data frame or list of numeric vectors, each of which is plotted as an individual swarm.}
   \item{method}{ Method for arranging points (see Details). }
   \item{vertical, horizontal}{ Orientation of the plot. \code{horizontal} takes precedence if both are specified. }
-  \item{cex}{ Size of points relative to the default given by \code{par("cex")}. Unlike other plotting functions, this must be a single value.}
+  \item{cex}{ Size of points relative to the default given by \code{par("cex")}. Unlike other plotting functions, this must be a single value. (But see also the \code{pwcex} argument)}
   \item{spacing}{ Relative spacing between points.}
   \item{breaks}{ Breakpoints (optional).  If \code{NULL}, breakpoints are chosen automatically. If \code{NA}, bins are not used (similar to \code{stripchart} with \code{method = "stack"}).}
   \item{labels}{ Labels for each group. Recycled if necessary. By default, these are inferred from the data. }
   \item{at}{ Numeric vector giving the locations where the swarms should be drawn; defaults to \code{1:n} where \var{n} is the number of groups. }
   \item{corral}{ Method to adjust points that would be placed outside their own group region (see Details). }
   \item{corralWidth}{ Width of the "corral" in user coordinates. If missing, a sensible value will be chosen. }
-    \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
+  \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
   \item{priority}{ Order used to perform point layout when method is \code{"swarm"}; ignored otherwise (see Details).}
   \item{pch, col, bg}{ Plotting characters and colors, specified by group. Recycled if necessary (see Details). }
-  \item{pwpch, pwcol, pwbg}{ \dQuote{Point-wise} plotting characters and colors, specified for each data point (see Details). }
+  \item{pwpch, pwcol, pwbg, pwcex}{ \dQuote{Point-wise} plotting characteristics, specified for each data point (see Details). }
   \item{do.plot}{ Draw a plot? }
   \item{add}{ Add to an existing plot? }
   \item{axes}{ Draw axes and box? }
@@ -78,12 +78,9 @@ In contrast to most other plotting functions, changing the size of the graphics 
 
 The plotting characters and colors can be controlled in two ways. First, the arguments \code{pch}, \code{col} and \code{bg} can specify plotting characters and colors in the same way as \code{\link{stripchart}} and \code{\link{boxplot}}: in short, the arguments apply to each group as a whole (and are recycled if necessary).
 
-Alternatively, the \dQuote{point-wise} characteristics of each individual data point can be controlled using \code{pwpch}, \code{pwcol}, and \code{pwbg}, which override \code{pch}, \code{col} and \code{bg} if these are also specified.  These arguments can be specified as a list or vector.  If supplied using the formula method, the arguments can be specified as part of the formula interface; i.e. they are affected by \code{data} and \code{subset}.
+Alternatively, the \dQuote{point-wise} characteristics of each individual data point can be controlled using \code{pwpch}, \code{pwcol}, and \code{pwbg}, which override \code{pch}, \code{col} and \code{bg} if these are also specified. Likewise, \code{pwcex} controls the size of each point relative to the default (which may be adjusted by \code{cex}). Notably, the point layout algorithm is applied without considering the point-wise arguments; thus setting \code{pwcex} larger than 1 will usually result in partially overlapping points. These arguments can be specified as a list or vector.  If supplied using the formula method, the arguments can be specified as part of the formula interface; i.e. they are affected by \code{data} and \code{subset}.
 
-  The \code{dlab} and \code{glab} labels may be used instead of \code{xlab}
-  and \code{ylab} if those are not specified.  \code{dlab} applies to the 
-  continuous data axis (the Y axis unless \code{horizontal} is \code{TRUE});
-  \code{glab} to the group axis. Likewise, \code{dlim} and \code{glim} can be used to specify limits of the axes instead of \code{xlim} or \code{ylim}.
+The \code{dlab} and \code{glab} labels may be used instead of \code{xlab} and \code{ylab} if those are not specified.  \code{dlab} applies to the continuous data axis (the Y axis unless \code{horizontal} is \code{TRUE}); \code{glab} to the group axis. Likewise, \code{dlim} and \code{glim} can be used to specify limits of the axes instead of \code{xlim} or \code{ylim}.
 
 This function is intended to be mostly compatible with calls to \code{\link{stripchart}} or \code{\link{boxplot}}.  Thus, code that works with these functions should work with \code{beeswarm} with minimal modification.
 
@@ -165,6 +162,11 @@ When using the \code{"swarm"} method, \code{priority} controls the order in whic
     main = 'priority = "random"')  
   beeswarm(distributions, col = 2:4, priority = "density", 
     main = 'priority = "density"')  
+
+  ## Demonstrate pwcol, pwpch, pwbg, and pwcex
+  beeswarm(mpg ~ cyl, data = mtcars, cex = 3, 
+    pwcol = gear, pwbg = am + 1, pwpch = gear + 18, pwcex = hp / 335)
+  
 }
 
 \keyword{ hplot }

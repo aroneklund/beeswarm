@@ -1,6 +1,11 @@
 beeswarm NEWS
 
 
+Changes in version 0.3.0 (2017-05-30)
+
+- Added new argument "pwcex" for adjusting plotting character size of individual points. (GitHub request #3 by alexpreynolds)
+
+
 Changes in version 0.2.3 (2016-04-25)
 
 - Fixed a bug in which specifying non-default "corral" and "side" arguments would result in unexpected results. (Issue #2)

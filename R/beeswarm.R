@@ -20,7 +20,7 @@ beeswarm.default <- function(x,
     corralWidth, side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
     pch = par("pch"), col = par("col"), bg = NA, 
-    pwpch = NULL, pwcol = NULL, pwbg = NULL,
+    pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
     do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE, 
     xlim = NULL, ylim = NULL, dlim = NULL, glim = NULL,
     xlab = NULL, ylab = NULL, dlab = "", glab = "",
@@ -157,7 +157,20 @@ beeswarm.default <- function(x,
     }
   }
   stopifnot(length(bg.out) == n.obs)
-  
+ 
+   if(is.null(pwcex)) {
+    cex.out <- unlistGroup(x, nms = rep(1, length.out = n.groups))
+  } else {
+    if(is.list(pwcex)) {
+      names(pwcex) <- names(x)
+      stopifnot(all(sapply(pwcex, length) == n.obs.per.group))
+      cex.out <- unlist(pwcex)
+    } else {
+      cex.out <- pwcex
+    }
+  }
+  stopifnot(length(cex.out) == n.obs)
+ 
   #### Set up the plot
   if(do.plot & !add) {
     plot(xlim, ylim, 
@@ -279,20 +292,20 @@ beeswarm.default <- function(x,
   g.pos <- lapply(1:n.groups, function(i) at[i] + g.offset[[i]])
 
   out <- data.frame(x = unlist(g.pos), y = unlist(d.pos), 
-                    pch = pch.out, col = col.out, bg = bg.out,
+                    pch = pch.out, col = col.out, bg = bg.out, cex = cex * cex.out,
                     x.orig = x.gp, y.orig = x.val,
                     stringsAsFactors = FALSE)
 
   if(do.plot) {
     if(horizontal) {     ## plot is horizontal
-      points(out$y, out$x, pch = out$pch, col = out$col, bg = out$bg, cex = cex)  
+      points(out$y, out$x, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)  
       if(axes & !add) {
         axis(1, ...)
         axis(2, at = at, labels = labels, tick = FALSE, ...)
         box(...)
       }
     } else {             ## plot is vertical
-      points(out$x, out$y, pch = out$pch, col = out$col, bg = out$bg, cex = cex)  
+      points(out$x, out$y, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)  
       if(axes & !add) {
         axis(2, ...)
         axis(1, at = at, labels = labels, tick = FALSE, ...)
@@ -306,7 +319,7 @@ beeswarm.default <- function(x,
    
   
 beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL, 
-    pwpch = NULL, pwcol = NULL, pwbg = NULL, dlab, glab, ...) 
+    pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, ...) 
 {
     if (missing(formula) || (length(formula) != 3)) 
         stop("'formula' missing or incorrect")
@@ -329,8 +342,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
     if(!is.null(mf$'(pwpch)')) pwpch <- split(mf$'(pwpch)', f)
     if(!is.null(mf$'(pwcol)')) pwcol <- split(mf$'(pwcol)', f)
     if(!is.null(mf$'(pwbg)')) pwbg <- split(mf$'(pwbg)',f)
+    if(!is.null(mf$'(pwcex)')) pwcex <- split(mf$'(pwcex)',f)
     beeswarm(split(mf[[response]], f), 
-      pwpch = pwpch, pwcol = pwcol, pwbg = pwbg,
+      pwpch = pwpch, pwcol = pwcol, pwbg = pwbg, pwcex = pwcex,
       dlab = dlab, glab = glab, ...)
 }
 
