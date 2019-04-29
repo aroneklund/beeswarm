@@ -33,3 +33,11 @@ bee swarm and related plots in the ggplot2 framework
 * [**pybeeswarm**](https://github.com/mgymrek/pybeeswarm)
 bee swarm plots in Python
 
+
+It's also known as a dot plot
+-----------------------------
+
+Leland Wilkinson (1999). Dot plots. The American Statistician. 53(3):276-281. 
+[PDF](https://www.cs.uic.edu/~wilkinson/Publications/dotplots.pdf)
+
+It seems to be the same basic point layout algorithm, except that Wilkinson suggests an additional smoothing step that the beeswarm package does not do.
