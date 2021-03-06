@@ -71,7 +71,7 @@ beeswarm.default <- function(x,
     warning('values <= 0 omitted from logarithmic plot')
   
   n.obs <- length(x.val)
-  n.obs.per.group <- sapply(x, length)
+  n.obs.per.group <- lengths(x)
   
   #### Resolve xlim, ylim, dlim, xlab, ylab
   if(is.null(dlim)) {
@@ -210,7 +210,7 @@ beeswarm.default <- function(x,
           d.pos <- x
         } else {
           mids <- 10 ^ ((log10(head(breaks, -1)) + log10(tail(breaks, -1))) / 2)
-          d.index <- lapply(x, cut, breaks = breaks, labels = FALSE)
+          d.index <- lapply(x, cut, breaks = breaks, labels = FALSE, include.lowest = TRUE)
           d.pos <- lapply(d.index, function(a) mids[a])  
         }
       } else {               ## if data axis is NOT on a log scale
@@ -221,7 +221,7 @@ beeswarm.default <- function(x,
           d.pos <- x
         } else {
           mids <- (head(breaks, -1) + tail(breaks, -1)) / 2
-          d.index <- lapply(x, cut, breaks = breaks, labels = FALSE)
+          d.index <- lapply(x, cut, breaks = breaks, labels = FALSE, include.lowest = TRUE)
           d.pos <- lapply(d.index, function(a) mids[a])  
         }
       }  

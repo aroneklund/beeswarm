@@ -1,6 +1,12 @@
 beeswarm NEWS
 
 
+Changes in version 0.3.1 (2021-03-06)
+
+- Fixed bug where non-varying input (a single value, or a single value repeated) in non-swarm methods would yield NAs (thanks raredd). (GitHub Issue #8) 
+- Updated email and URL in DESCRIPTION.
+
+
 Changes in version 0.3.0 (2017-05-30)
 
 - Added new argument "pwcex" for adjusting plotting character size of individual points. (GitHub request #3 by alexpreynolds)

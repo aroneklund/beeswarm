@@ -1,6 +1,6 @@
 Package: beeswarm
-Version: 0.3.0
-Date: 2017-05-30
+Version: 0.3.1
+Date: 2021-03-06
 Title: The Bee Swarm Plot, an Alternative to Stripchart
 Author: Aron Eklund
 Maintainer: Aron Eklund <aroneklund@gmail.com>
