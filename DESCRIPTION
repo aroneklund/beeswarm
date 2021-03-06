@@ -3,8 +3,8 @@ Version: 0.3.0
 Date: 2017-05-30
 Title: The Bee Swarm Plot, an Alternative to Stripchart
 Author: Aron Eklund
-Maintainer: Aron Eklund <eklund@cbs.dtu.dk>
+Maintainer: Aron Eklund <aroneklund@gmail.com>
 Imports: stats, graphics, grDevices, utils
 Description: The bee swarm plot is a one-dimensional scatter plot like "stripchart", but with closely-packed, non-overlapping points. 
 License: Artistic-2.0
-URL: http://www.cbs.dtu.dk/~eklund/beeswarm/
+URL: https://github.com/aroneklund/beeswarm
