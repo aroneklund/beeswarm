@@ -471,12 +471,9 @@ swarmx <- function(x, y,
   stopifnot((length(unique(xy$x)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
-  if (compact)
-    x.new <- xy$x + .calculateCompactSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex, 
-      side = side, priority = priority)
-  else
-    x.new <- xy$x + .calculateSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex, 
-      side = side, priority = priority)
+  swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
+  x.new <- xy$x + swarmFn(xy$y, dsize = ysize * cex, gsize = xsize * cex,
+    side = side, priority = priority)
   out <- data.frame(x = x.new, y = y)
   if(xlog) out$x <- 10 ^ out$x
   out
@@ -498,12 +495,9 @@ swarmy <- function(x, y,
   stopifnot((length(unique(xy$y)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
-  if (compact)
-    y.new <- xy$y + .calculateCompactSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex, 
-      side = side, priority = priority)
-  else
-    y.new <- xy$y + .calculateSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex, 
-      side = side, priority = priority)
+  swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
+  y.new <- xy$y + swarmFn(xy$x, dsize = xsize * cex, gsize = ysize * cex,
+    side = side, priority = priority)
   out <- data.frame(x = x, y = y.new)
   if(ylog) out$y <- 10 ^ out$y
   out
