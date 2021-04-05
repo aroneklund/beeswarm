@@ -435,18 +435,23 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
       out$placed[i] <- TRUE
       out$y.best[i] <- Inf               ## Ensure it won't be chosen again
       xdiff = abs(xi - out$x)
-      for (j in which(!out$placed & xdiff < 1)) {
-        y.offset <- sqrt(1 - (xdiff[j] ^ 2))
-        y.best <- Inf
-        if(side != -1) {
-          out$y.high[j] <- max(out$y.high[j], yi + y.offset)
-          y.best <- out$y.high[j]
+      if(side == 0) {
+        for (j in which(!out$placed & xdiff < 1)) {
+          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
+          y.high <- out$y.high[j] <- max(out$y.high[j], yi + y.offset)
+          y.low <- out$y.low[j] <- min(out$y.low[j], yi - y.offset)
+          out$y.best[j] <- ifelse(-y.low < y.high, y.low, y.high)
         }
-        if(side != 1) {
-          out$y.low[j] <- min(out$y.low[j], yi - y.offset)
-          if(-out$y.low[j] < y.best) y.best <- out$y.low[j]
+      } else if(side == 1) {
+        for (j in which(!out$placed & xdiff < 1)) {
+          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
+          out$y.best[j] <- out$y.high[j] <- max(out$y.high[j], yi + y.offset)
         }
-        out$y.best[j] <- y.best
+      } else {
+        for (j in which(!out$placed & xdiff < 1)) {
+          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
+          out$y.best[j] <- out$y.low[j] <- min(out$y.low[j], yi - y.offset)
+        }
       }
     }
   }
