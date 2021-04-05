@@ -110,7 +110,7 @@ Whereas the \code{"swarm"} method places points in a predetermined order, the \c
    beeswarm(len ~ dose, data = ToothGrowth, col = 2, add = TRUE)
 
   ## Compare the 5 methods
-  op <- par(mfrow = c(2,2))
+  op <- par(mfrow = c(2,3))
   for (m in c("swarm", "compactswarm", "center", "hex", "square")) {
     beeswarm(len ~ dose, data = ToothGrowth, method = m, main = m)
   }
@@ -163,6 +163,21 @@ Whereas the \code{"swarm"} method places points in a predetermined order, the \c
     main = 'priority = "random"')  
   beeswarm(distributions, col = 2:4, priority = "density", 
     main = 'priority = "density"')  
+
+  ## Demonstrate 'side' and 'priority' for compact method
+  par(mfrow = c(2,3))
+  beeswarm(distributions, col = 2:4, method = "compactswarm",
+    main = 'Default')
+  beeswarm(distributions, col = 2:4, method = "compactswarm", side = -1, 
+    main = 'side = -1')
+  beeswarm(distributions, col = 2:4, method = "compactswarm", side = 1, 
+    main = 'side = 1')
+  beeswarm(distributions, col = 2:4, method = "compactswarm",
+    priority = "descending",  main = 'priority = "descending"')
+  beeswarm(distributions, col = 2:4, method = "compactswarm",
+    priority = "random",  main = 'priority = "random"')  
+  beeswarm(distributions, col = 2:4, method = "compactswarm",
+    priority = "density",  main = 'priority = "density"')  
 
   ## Demonstrate pwcol, pwpch, pwbg, and pwcex
   beeswarm(mpg ~ cyl, data = mtcars, cex = 3, 
