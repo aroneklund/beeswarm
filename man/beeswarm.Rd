@@ -109,7 +109,7 @@ Whereas the \code{"swarm"} method places points in a predetermined order, the \c
               ylab = "Tooth length")  
    beeswarm(len ~ dose, data = ToothGrowth, col = 2, add = TRUE)
 
-  ## Compare the 4 methods
+  ## Compare the 5 methods
   op <- par(mfrow = c(2,2))
   for (m in c("swarm", "compactswarm", "center", "hex", "square")) {
     beeswarm(len ~ dose, data = ToothGrowth, method = m, main = m)
