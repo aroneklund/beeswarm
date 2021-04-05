@@ -16,7 +16,7 @@ beeswarm(x, \dots)
          pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, \dots)
 
 \method{beeswarm}{default}(x, 
-    method = c("swarm", "center", "hex", "square"), 
+    method = c("swarm", "compactswarm", "center", "hex", "square"), 
     vertical = TRUE, horizontal = !vertical, 
     cex = 1, spacing = 1, breaks = NULL,
     labels, at = NULL, 
@@ -53,7 +53,7 @@ beeswarm(x, \dots)
   \item{corral}{ Method to adjust points that would be placed outside their own group region (see Details). }
   \item{corralWidth}{ Width of the "corral" in user coordinates. If missing, a sensible value will be chosen. }
   \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
-  \item{priority}{ Order used to perform point layout when method is \code{"swarm"}; ignored otherwise (see Details).}
+  \item{priority}{ Order used to perform point layout when method is \code{"swarm"} or \code{"compactswarm"}; ignored otherwise (see Details).}
   \item{pch, col, bg}{ Plotting characters and colors, specified by group. Recycled if necessary (see Details). }
   \item{pwpch, pwcol, pwbg, pwcex}{ \dQuote{Point-wise} plotting characteristics, specified for each data point (see Details). }
   \item{do.plot}{ Draw a plot? }
@@ -88,6 +88,7 @@ By default, swarms from different groups are not prevented from overlapping. Thu
 
 When using the \code{"swarm"} method, \code{priority} controls the order in which the points are placed; this generally has a noticeable effect on the resulting appearance. \code{"ascending"} gives the "traditional" beeswarm plot in which the points are placed in an ascending order. \code{"descending"} is the opposite. \code{"density"} prioritizes points with higher local density. \code{"random"} places points in a random order. \code{"none"} places points in the order provided.
 
+Whereas the \code{"swarm"} method places points in a predetermined order, the \code{"compactswarm"} method uses a greedy strategy to determine which point will be placed next. This often leads to a more tightly-packed layout. The strategy is very simple: on each iteration, a point that can be placed as close as possible to the non-data axis is chosen and placed. If there are two or more equally good points, \code{priority} is used to break ties.
 }
 
 \value{ A data frame with plotting information, invisibly. }
@@ -110,7 +111,7 @@ When using the \code{"swarm"} method, \code{priority} controls the order in whic
 
   ## Compare the 4 methods
   op <- par(mfrow = c(2,2))
-  for (m in c("swarm", "center", "hex", "square")) {
+  for (m in c("swarm", "compactswarm", "center", "hex", "square")) {
     beeswarm(len ~ dose, data = ToothGrowth, method = m, main = m)
   }
   par(op)
