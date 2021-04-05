@@ -12,7 +12,7 @@ beeswarm <- function (x, ...)
 
 ## here x should be a list or data.frame or numeric
 beeswarm.default <- function(x, 
-    method = c("swarm", "center", "hex", "square"), 
+    method = c("swarm", "compactswarm", "center", "hex", "square"),
     vertical = TRUE, horizontal = !vertical, 
     cex = 1, spacing = 1, breaks = NULL,
     labels, at = NULL, 
@@ -190,13 +190,16 @@ beeswarm.default <- function(x,
   }
   
   ##### Calculate point positions g.pos, d.pos 
-  if(method == 'swarm') {
+  if(method %in% c('swarm', 'compactswarm') {
+    compact <- method == 'compactswarm'
     if(horizontal) {
       g.offset <- lapply(x, function(a) swarmy(x = a, y = rep(0, length(a)), 
-          cex = sizeMultiplier, side = side, priority = priority)$y)
+          cex = sizeMultiplier, side = side, priority = priority,
+          compact = compact)$y)
     } else {
       g.offset <- lapply(x, function(a) swarmx(x = rep(0, length(a)), y = a, 
-          cex = sizeMultiplier, side = side, priority = priority)$x)
+          cex = sizeMultiplier, side = side, priority = priority,
+          compact = compact)$x)
     }
     d.pos <- x
   } else {          ####   non-swarm methods
@@ -398,12 +401,58 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 }
 
 
+#### hidden function to do swarm layout
+.calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
+  if(length(x) == 0) return(numeric(0))
+  stopifnot(side %in% -1:1)
+  out <- data.frame(x = x / dsize, y = 0, index = seq(along = x), placed = FALSE,
+                    y.low = 0, y.high = 0, y.score = 0)
+
+  #### Determine the order in which points will be placed
+  if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
+  else if(priority == "descending") { out <- out[order(-out$x), ] } ## frown
+  else if(priority == "none") {  } ## do not reorder
+  else if(priority == "density") {
+    dens.x <- density(out$x, na.rm = TRUE)  ## compute kernel density estimate
+    dens.interp <- approx(dens.x$x, dens.x$y, xout = out$x, rule = 2)  ## interpolated density
+    out <- out[order(-dens.interp$y), ]  ## arrange outward from densest areas
+  }
+  else if(priority == "random") {
+	out <- out[sample(nrow(out)), ]
+  }
+  #### place the points
+  if(nrow(out) > 1) {
+    for (i in 1:nrow(out)) {          ## we will place one point at a time
+      ii <- which.min(out$y.score)
+      xi <- out$x[ii]
+      out$y.score[ii] <- Inf
+      out$placed[ii] <- TRUE
+      out$y[ii] <- ifelse(abs(out$y.low[ii]) < out$y.high[ii], out$y.low[ii], out$y.high[ii])
+      yi <- out$y[ii]
+      for (j in which(!out$placed)) {
+        xj <- out$x[j]
+        yj <- out$y[j]
+        xdiff <- abs(xi - xj)
+        if (xdiff >= 1) next   ## points do not x-overlap
+        y.offset <- sqrt(1 - (xdiff ^ 2))
+        out$y.low[j] <- min(out$y.low[j], yi - y.offset)
+        out$y.high[j] <- max(out$y.high[j], yi + y.offset)
+        out$y.score[j] <- min(abs(out$y.low[j]), out$y.high[j])
+      }
+    }
+  }
+  out[is.na(out$x), 'y'] <- NA        ## missing x values should have missing y values
+  out$y[order(out$index)] * gsize
+}
+
+
 ### jitter points horizontally
 swarmx <- function(x, y, 
     xsize = xinch(0.08, warn.log = FALSE), 
     ysize = yinch(0.08, warn.log = FALSE),
     log = NULL, cex = par("cex"), side = 0L, 
-    priority = c("ascending", "descending", "density", "random", "none")) { 
+    priority = c("ascending", "descending", "density", "random", "none"),
+    compact = FALSE) { 
   priority <- match.arg(priority)
   if(is.null(log)) 
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
@@ -413,8 +462,12 @@ swarmx <- function(x, y,
   stopifnot((length(unique(xy$x)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
-  x.new <- xy$x + .calculateSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex, 
-    side = side, priority = priority)
+  if (compact)
+    x.new <- xy$x + .calculateCompactSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex, 
+      side = side, priority = priority)
+  else
+    x.new <- xy$x + .calculateSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex, 
+      side = side, priority = priority)
   out <- data.frame(x = x.new, y = y)
   if(xlog) out$x <- 10 ^ out$x
   out
@@ -425,7 +478,8 @@ swarmy <- function(x, y,
     xsize = xinch(0.08, warn.log = FALSE), 
     ysize = yinch(0.08, warn.log = FALSE),
     log = NULL, cex = par("cex"), side = 0L, 
-    priority = c("ascending", "descending", "density", "random", "none")) { 
+    priority = c("ascending", "descending", "density", "random", "none"),
+    compact = FALSE) { 
   priority <- match.arg(priority)
   if(is.null(log)) 
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
@@ -435,8 +489,12 @@ swarmy <- function(x, y,
   stopifnot((length(unique(xy$y)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
-  y.new <- xy$y + .calculateSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex, 
-    side = side, priority = priority)
+  if (compact)
+    y.new <- xy$y + .calculateCompactSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex, 
+      side = side, priority = priority)
+  else
+    y.new <- xy$y + .calculateSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex, 
+      side = side, priority = priority)
   out <- data.frame(x = x, y = y.new)
   if(ylog) out$y <- 10 ^ out$y
   out
