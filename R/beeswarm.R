@@ -190,7 +190,7 @@ beeswarm.default <- function(x,
   }
   
   ##### Calculate point positions g.pos, d.pos 
-  if(method %in% c('swarm', 'compactswarm') {
+  if(method %in% c('swarm', 'compactswarm')) {
     compact <- method == 'compactswarm'
     if(horizontal) {
       g.offset <- lapply(x, function(a) swarmy(x = a, y = rep(0, length(a)), 
@@ -405,8 +405,13 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 .calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
+
+  ## out$y.low: best permitted position <= 0 for each point
+  ## out$y.high: best permitted position >= 0 for each point
+  ## out$y.best: best permitted position for each point (or Inf for placed points)
+  ## out$y.placed: which points have been placed
   out <- data.frame(x = x / dsize, y = 0, index = seq(along = x), placed = FALSE,
-                    y.low = 0, y.high = 0, y.score = 0)
+                    y.low = 0, y.high = 0, y.best = 0)
 
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
@@ -418,26 +423,30 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
     out <- out[order(-dens.interp$y), ]  ## arrange outward from densest areas
   }
   else if(priority == "random") {
-	out <- out[sample(nrow(out)), ]
+    out <- out[sample(nrow(out)), ]
   }
   #### place the points
   if(nrow(out) > 1) {
-    for (i in 1:nrow(out)) {          ## we will place one point at a time
-      ii <- which.min(out$y.score)
-      xi <- out$x[ii]
-      out$y.score[ii] <- Inf
-      out$placed[ii] <- TRUE
-      out$y[ii] <- ifelse(abs(out$y.low[ii]) < out$y.high[ii], out$y.low[ii], out$y.high[ii])
-      yi <- out$y[ii]
-      for (j in which(!out$placed)) {
-        xj <- out$x[j]
-        yj <- out$y[j]
-        xdiff <- abs(xi - xj)
-        if (xdiff >= 1) next   ## points do not x-overlap
-        y.offset <- sqrt(1 - (xdiff ^ 2))
-        out$y.low[j] <- min(out$y.low[j], yi - y.offset)
-        out$y.high[j] <- max(out$y.high[j], yi + y.offset)
-        out$y.score[j] <- min(abs(out$y.low[j]), out$y.high[j])
+    for (iter in 1:nrow(out)) {          ## we will place one point at a time
+      i <- which.min(abs(out$y.best))    ## Choose a point that can be placed
+                                         ## close to non-data axis
+      xi <- out$x[i]
+      yi <- out$y[i] <- out$y.best[i]
+      out$placed[i] <- TRUE
+      out$y.best[i] <- Inf               ## Ensure it won't be chosen again
+      xdiff = abs(xi - out$x)
+      for (j in which(!out$placed & xdiff < 1)) {
+        y.offset <- sqrt(1 - (xdiff[j] ^ 2))
+        y.best <- Inf
+        if(side != -1) {
+          out$y.high[j] <- max(out$y.high[j], yi + y.offset)
+          y.best <- out$y.high[j]
+        }
+        if(side != 1) {
+          out$y.low[j] <- min(out$y.low[j], yi - y.offset)
+          if(-out$y.low[j] < y.best) y.best <- out$y.low[j]
+        }
+        out$y.best[j] <- y.best
       }
     }
   }
