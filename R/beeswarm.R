@@ -403,14 +403,13 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 
 #### hidden function to do swarm layout
 .calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
-  if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
 
-  ## out$y.low: best permitted position <= 0 for each point
-  ## out$y.high: best permitted position >= 0 for each point
-  ## out$y.best: best permitted position for each point (or Inf for placed points)
-  ## out$y.placed: which points have been placed
-  out <- data.frame(x = x / dsize, index = seq(along = x))
+  x_excl_na = x[!is.na(x)]
+  if(length(x_excl_na) == 0) return(numeric(0))
+
+  out <- data.frame(x = x_excl_na / dsize, index = seq(along = x_excl_na))
+  if(nrow(out) == 0) return(numeric(0))
 
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
@@ -424,15 +423,18 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   else if(priority == "random") {
     out <- out[sample(nrow(out)), ]
   }
+  n <- nrow(out)
   #### place the points
   result <- .C(C_compactSwarm,
                x = as.double(out$x),
-               n = length(x),
+               n = n,
                side = as.integer(side),
-               placed = rep(0L, length(x)),
-               workspace = rep(0, length(x) * 3),
-               y = rep(0, length(x)))
-  result[[6]][order(out$index)] * gsize
+               placed = integer(n),
+               workspace = numeric(n * 3),
+               y = numeric(n))
+  y <- rep(NA, length(x))
+  y[!is.na(x)] <- result[[6]][order(out$index)] * gsize
+  y
 }
 
 
