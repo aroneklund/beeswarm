@@ -410,8 +410,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   ## out$y.high: best permitted position >= 0 for each point
   ## out$y.best: best permitted position for each point (or Inf for placed points)
   ## out$y.placed: which points have been placed
-  out <- data.frame(x = x / dsize, y = 0, index = seq(along = x), placed = FALSE,
-                    y.low = 0, y.high = 0, y.best = 0)
+  out <- data.frame(x = x / dsize, index = seq(along = x))
 
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
@@ -426,37 +425,14 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
     out <- out[sample(nrow(out)), ]
   }
   #### place the points
-  if(nrow(out) > 1) {
-    for (iter in 1:nrow(out)) {          ## we will place one point at a time
-      i <- which.min(abs(out$y.best))    ## Choose a point that can be placed
-                                         ## close to non-data axis
-      xi <- out$x[i]
-      yi <- out$y[i] <- out$y.best[i]
-      out$placed[i] <- TRUE
-      out$y.best[i] <- Inf               ## Ensure it won't be chosen again
-      xdiff = abs(xi - out$x)
-      if(side == 0) {
-        for (j in which(!out$placed & xdiff < 1)) {
-          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
-          y.high <- out$y.high[j] <- max(out$y.high[j], yi + y.offset)
-          y.low <- out$y.low[j] <- min(out$y.low[j], yi - y.offset)
-          out$y.best[j] <- ifelse(-y.low < y.high, y.low, y.high)
-        }
-      } else if(side == 1) {
-        for (j in which(!out$placed & xdiff < 1)) {
-          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
-          out$y.best[j] <- out$y.high[j] <- max(out$y.high[j], yi + y.offset)
-        }
-      } else {
-        for (j in which(!out$placed & xdiff < 1)) {
-          y.offset <- sqrt(1 - (xdiff[j] ^ 2))
-          out$y.best[j] <- out$y.low[j] <- min(out$y.low[j], yi - y.offset)
-        }
-      }
-    }
-  }
-  out[is.na(out$x), 'y'] <- NA        ## missing x values should have missing y values
-  out$y[order(out$index)] * gsize
+  result <- .C(C_compactSwarm,
+               x = as.double(out$x),
+               n = length(x),
+               side = as.integer(side),
+               placed = rep(0L, length(x)),
+               workspace = rep(0, length(x) * 3),
+               y = rep(0, length(x)))
+  result[[6]][order(out$index)] * gsize
 }
 
 

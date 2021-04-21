@@ -1,4 +1,3 @@
-
 export(beeswarm, bxplot, swarmx, swarmy)
 
 S3method(beeswarm, default)
@@ -10,3 +9,5 @@ importFrom("grDevices", "extendrange", "xy.coords")
 importFrom("graphics", "axis", "box", "boxplot", "par", "plot", "points", "segments", "xinch", "yinch")
 importFrom("stats", "approx", "density", "na.omit", "quantile", "runif")
 importFrom("utils", "head", "tail")
+
+useDynLib(beeswarm, .registration = TRUE, .fixes = "C_")

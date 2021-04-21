@@ -4,3 +4,5 @@
 .Ruserdata
 .Rbuildignore
 beeswarm.Rproj
+*.o
+*.so
