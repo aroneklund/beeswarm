@@ -6,3 +6,4 @@
 beeswarm.Rproj
 *.o
 *.so
+src/symbols.rds
