@@ -8,12 +8,14 @@ swarmx(x, y,
     xsize = xinch(0.08, warn.log = FALSE), 
     ysize = yinch(0.08, warn.log = FALSE),
     log = NULL, cex = par("cex"), side = 0L, 
-    priority = c("ascending", "descending", "density", "random", "none"))
+    priority = c("ascending", "descending", "density", "random", "none"),
+    fast = TRUE, compact = FALSE)
 swarmy(x, y, 
     xsize = xinch(0.08, warn.log = FALSE), 
     ysize = yinch(0.08, warn.log = FALSE),
     log = NULL, cex = par("cex"), side = 0L, 
-    priority = c("ascending", "descending", "density", "random", "none"))
+    priority = c("ascending", "descending", "density", "random", "none"),
+    fast = TRUE, compact = FALSE)
 }
 \arguments{
   \item{x, y}{ Coordinate vectors in any format supported by \code{\link{xy.coords}}. }
@@ -22,6 +24,8 @@ swarmy(x, y,
   \item{cex}{ Relative plotting character size.}
   \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
   \item{priority}{ Method used to perform point layout (see below).}
+  \item{fast}{ Use compiled version of algorithm?}
+  \item{compact}{ Use compact layout? (see below)}
 }
 \details{ 
 For \code{swarmx}, the input coordinates must lie in a vertical line.  For \code{swarmy}, the input coordinates must lie in a horizontal line.

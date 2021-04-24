@@ -23,6 +23,7 @@ beeswarm(x, \dots)
     corral = c("none", "gutter", "wrap", "random", "omit"),
     corralWidth, side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
+    fast = TRUE,
     pch = par("pch"), col = par("col"), bg = NA, 
     pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
     do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE,
@@ -54,6 +55,7 @@ beeswarm(x, \dots)
   \item{corralWidth}{ Width of the "corral" in user coordinates. If missing, a sensible value will be chosen. }
   \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
   \item{priority}{ Order used to perform point layout when method is \code{"swarm"} or \code{"compactswarm"}; ignored otherwise (see Details).}
+  \item{fast}{ Use compiled version of algorithm?}
   \item{pch, col, bg}{ Plotting characters and colors, specified by group. Recycled if necessary (see Details). }
   \item{pwpch, pwcol, pwbg, pwcex}{ \dQuote{Point-wise} plotting characteristics, specified for each data point (see Details). }
   \item{do.plot}{ Draw a plot? }
