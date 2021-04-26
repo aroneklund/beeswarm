@@ -24,7 +24,7 @@ swarmy(x, y,
   \item{cex}{ Relative plotting character size.}
   \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
   \item{priority}{ Method used to perform point layout (see below).}
-  \item{fast}{ Use compiled version of algorithm?}
+  \item{fast}{ Use compiled version of algorithm?  This option is ignored for all methods except \code{"swarm"} and \code{"compactswarm"}.}
   \item{compact}{ Use compact layout? (see below)}
 }
 \details{ 
