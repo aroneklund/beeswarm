@@ -357,7 +357,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 .calculateSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
-  out <- data.frame(x = x / dsize, y = 0, index = seq(along = x))
+  out <- data.frame(x = x / dsize, y = 0, index = seq_along(x))
   
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
@@ -410,7 +410,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   ## out$y.high: best permitted position >= 0 for each point
   ## out$y.best: best permitted position for each point (or Inf for placed points)
   ## out$y.placed: which points have been placed
-  out <- data.frame(x = x / dsize, y = 0, index = seq(along = x), placed = FALSE,
+  out <- data.frame(x = x / dsize, y = 0, index = seq_along(x), placed = FALSE,
                     y.low = 0, y.high = 0, y.best = 0)
 
   #### Determine the order in which points will be placed
