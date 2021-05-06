@@ -465,7 +465,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
 
-  out <- data.frame(x = x / dsize, index = seq(along = x))
+  out <- data.frame(x = x / dsize, index = seq_along(x))
 
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
