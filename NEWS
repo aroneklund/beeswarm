@@ -1,6 +1,14 @@
 beeswarm NEWS
 
 
+Changes in version 0.4.0 (2021-05-07)
+
+- Thanks to James Trimble (now a package author) for the following:
+- The "method" argument has a new option "compactswarm", which gives a swarm with a more dense point layout.
+- New argument "fast" (default: TRUE) does point layout with faster C code.
+- Thus, the package now requires compilation.
+
+
 Changes in version 0.3.1 (2021-03-06)
 
 - Fixed bug where non-varying input (a single value, or a single value repeated) in non-swarm methods would yield NAs (thanks raredd). (GitHub Issue #8) 
