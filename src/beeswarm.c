@@ -90,7 +90,7 @@ static int which_min_abs(double *y_best, int *placed, int n)
 }
 
 static void compactSwarm(double *x, int n, int side,
-    int *placed, double *workspace, double *y)
+    double epsilon, int *placed, double *workspace, double *y)
 {
   double *y_low = workspace;       // largest permitted negative y value
   double *y_high = workspace + n;  // smallest permitted positive y value
@@ -98,7 +98,16 @@ static void compactSwarm(double *x, int n, int side,
 
   for (int iter=0; iter<n; iter++) {
     R_CheckUserInterrupt();
+
     int i = which_min_abs(y_best, placed, n);
+    if (epsilon > 0) {
+      double min_abs = fabs(y_best[i]);
+      i = 0;
+      while (placed[i] || fabs(y_best[i]) > min_abs + epsilon) ++i;
+      // i is now the index of the first unplaced point whose y_best value is no
+      // greater than min_abs
+    }
+
     double xi = x[i];
     double yi = y_best[i];
     y[i] = yi;
@@ -132,15 +141,18 @@ static void compactSwarm(double *x, int n, int side,
  * n         length of x
  * compact   use compact layout?
  * side      -1, 0, or 1
+ * epsilon   for the compact beeswarm only: allow the placement of circles
+             whose distance from the non-data axis is up to epsilon more than
+             that of the closest point to the axis
  * placed    which circles have been placed (logical type)
  * workspace an array of doubles for internal use
  * y         (output) circle positions on non-data axis
  */
 void attribute_hidden calculateSwarm(double *x, int *n, int *compact, int *side,
-    int *placed, double *workspace, double *y)
+    double *epsilon, int *placed, double *workspace, double *y)
 {
   if (*compact) {
-    compactSwarm(x, *n, *side, placed, workspace, y);
+    compactSwarm(x, *n, *side, *epsilon, placed, workspace, y);
   } else {
     swarm(x, *n, *side, placed, workspace, y);
   }
