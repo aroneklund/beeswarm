@@ -26,7 +26,7 @@ swarmy(x, y,
   \item{priority}{ Method used to perform point layout (see below).}
   \item{fast}{ Use compiled version of algorithm?  This option is ignored for all methods except \code{"swarm"} and \code{"compactswarm"}.}
   \item{compact}{ Use compact layout? (see below)}
-  \item{epsilon}{Tolerance for floating-point comparisons.  The default value of zero usually works well, but for very regular inputs such as 1:100 a tiny value of \code{epsilon} such as 0.0000001 gives better results.  This option is ignored for all methods except \code{"compactswarm"}.}
+  \item{epsilon}{Tolerance for floating-point comparisons.  The default value of zero usually works well, but in some cases a tiny value of \code{epsilon} such as 0.0000001 gives better results.  This option is ignored for all methods except \code{"compactswarm"}.}
 }
 \details{ 
 For \code{swarmx}, the input coordinates must lie in a vertical line.  For \code{swarmy}, the input coordinates must lie in a horizontal line.
