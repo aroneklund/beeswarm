@@ -57,7 +57,7 @@ beeswarm(x, \dots)
   \item{side}{ Direction to perform jittering: 0: both directions; 1: to the right or upwards; -1: to the left or downwards.}
   \item{priority}{ Order used to perform point layout when method is \code{"swarm"} or \code{"compactswarm"}; ignored otherwise (see Details).}
   \item{fast}{ Use compiled version of algorithm?  This option is ignored for all methods except \code{"swarm"} and \code{"compactswarm"}.}
-  \item{epsilon}{Tolerance for floating-point comparisons.  The default value of zero usually works well, but in some cases a tiny value of \code{epsilon} such as 0.0000001 gives better results.  This option is ignored for all methods except \code{"compactswarm"}.}
+  \item{epsilon}{Tolerance for floating-point comparisons.  The default value of zero usually works well, but in some cases a tiny value of \code{epsilon} such as 0.0000001 gives a more compact arrangement of points.  This option is ignored for all methods except \code{"compactswarm"}.}
   \item{pch, col, bg}{ Plotting characters and colors, specified by group. Recycled if necessary (see Details). }
   \item{pwpch, pwcol, pwbg, pwcex}{ \dQuote{Point-wise} plotting characteristics, specified for each data point (see Details). }
   \item{do.plot}{ Draw a plot? }
