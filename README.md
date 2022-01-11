@@ -7,10 +7,6 @@ beeswarm
 An R package implementing bee swarm plots
 
 
-You can see some examples here:
-http://www.cbs.dtu.dk/~eklund/beeswarm/
-
-
 Installation
 ------------
 
