@@ -48,7 +48,7 @@ beeswarm(x, \dots)
   \item{vertical, horizontal}{ Orientation of the plot. \code{horizontal} takes precedence if both are specified. }
   \item{cex}{ Size of points relative to the default given by \code{par("cex")}. Unlike other plotting functions, this must be a single value. (But see also the \code{pwcex} argument)}
   \item{spacing}{ Relative spacing between points.}
-  \item{breaks}{ Breakpoints (optional).  If \code{NULL}, breakpoints are chosen automatically. If \code{NA}, bins are not used (similar to \code{stripchart} with \code{method = "stack"}).}
+  \item{breaks}{ Breakpoints for data discretization (optional).  Used only if \code{method} is \code{"square"}, \code{"hex"}, or \code{"center"}. If \code{NULL}, breakpoints are chosen automatically. If \code{NA}, data is not discretized at all (similar to \code{stripchart} with \code{method = "stack"}).}
   \item{labels}{ Labels for each group. Recycled if necessary. By default, these are inferred from the data. }
   \item{at}{ Numeric vector giving the locations where the swarms should be drawn; defaults to \code{1:n} where \var{n} is the number of groups. }
   \item{corral}{ Method to adjust points that would be placed outside their own group region (see Details). }
@@ -72,9 +72,9 @@ beeswarm(x, \dots)
 \details{ 
 Several methods for placing the points are available; each method uses a different algorithm to avoid overlapping points. 
 
-The default method, \code{swarm}, places points in increasing order. If a point would overlap an existing point, it is shifted sideways (along the group axis) by a minimal amount sufficient to avoid overlap. \code{breaks} is ignored.
+The default method, \code{swarm}, places points in increasing order. If a point would overlap an existing point, it is shifted sideways (along the group axis) by a minimal amount sufficient to avoid overlap. With this method \code{breaks} is ignored.
 
-The other three methods first discretize the values along the data axis, in order to create more efficient packing: \code{square} places the points on a square grid, whereas \code{hex} uses a hexagonal grid.  \code{center} uses a  square grid to produce a symmetric swarm. By default, the number of breakpoints for discretization is determined by a combination of the available plotting area and the plotting character size. The discretization of the data can be explicitly controlled using \code{breaks}. If \code{breaks} is set to \code{NA}, the data will not be grouped into intervals; this may be a sensible option if the data is already discrete.
+The methods \code{square}, \code{hex}, and \code{center} do the same thing, but they first discretize the values along the continuous data axis, in order to enable more efficient packing: \code{square} places the points on a square grid, \code{hex} uses a hexagonal grid, and \code{center} uses a centered square grid. By default, the number of breakpoints for discretization is determined by a combination of the available plotting area and the plotting character size. The discretization of the data can be explicitly controlled using \code{breaks}. If \code{breaks} is set to \code{NA}, the data will not be grouped into intervals; this may be a sensible option if the data is already discrete. NOTE that these three methods adjust the data to fit into a grid, and therefore the resulting plots should be intepreted with this in mind.
 
 In contrast to most other plotting functions, changing the size of the graphics device will often change the position of the points.  
 
