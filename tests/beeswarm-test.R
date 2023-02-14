@@ -6,24 +6,30 @@ test_swarms <- function(x) {
     for (compact in c(FALSE, TRUE)) {
       for (priority in c("ascending", "descending", "density", "random", "none")) {
         for (side in -1:1) {
-          print(na_positions)
-          print(compact)
-          print(priority)
-          print(side)
-          # compare R and C versions of swarmy and swarmx
-          set.seed(1)
-          y1 <- swarmy(x, numeric(length(x)), compact=compact, side=side, priority=priority, fast=TRUE)$y
-          set.seed(1)
-          y2 <- swarmy(x, numeric(length(x)), compact=compact, side=side, priority=priority, fast=FALSE)$y
-          stopifnot(all.equal(y1, y2))
-          stopifnot(identical(which(is.na(y1)), na_positions))
+          for (epsilon in c(0, 0.00001, 0.1)) {
+            if (epsilon > 0 & !compact) {
+              next;
+            }
+            print(na_positions)
+            print(compact)
+            print(priority)
+            print(side)
+            print(epsilon)
+            # compare R and C versions of swarmy and swarmx
+            set.seed(1)
+            y1 <- swarmy(x, numeric(length(x)), compact=compact, side=side, priority=priority, fast=TRUE, epsilon=epsilon)$y
+            set.seed(1)
+            y2 <- swarmy(x, numeric(length(x)), compact=compact, side=side, priority=priority, fast=FALSE, epsilon=epsilon)$y
+            stopifnot(all.equal(y1, y2))
+            stopifnot(identical(which(is.na(y1)), na_positions))
 
-          set.seed(1)
-          x1 <- swarmx(numeric(length(x)), x, compact=compact, side=side, priority=priority, fast=TRUE)$x
-          set.seed(1)
-          x2 <- swarmx(numeric(length(x)), x, compact=compact, side=side, priority=priority, fast=FALSE)$x
-          stopifnot(all.equal(x1, x2))
-          stopifnot(identical(which(is.na(x1)), na_positions))
+            set.seed(1)
+            x1 <- swarmx(numeric(length(x)), x, compact=compact, side=side, priority=priority, fast=TRUE, epsilon=epsilon)$x
+            set.seed(1)
+            x2 <- swarmx(numeric(length(x)), x, compact=compact, side=side, priority=priority, fast=FALSE, epsilon=epsilon)$x
+            stopifnot(all.equal(x1, x2))
+            stopifnot(identical(which(is.na(x1)), na_positions))
+          }
         }
       }
     }

@@ -20,6 +20,7 @@ beeswarm.default <- function(x,
     corralWidth, side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
+    epsilon = 0,
     pch = par("pch"), col = par("col"), bg = NA, 
     pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
     do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE, 
@@ -196,11 +197,11 @@ beeswarm.default <- function(x,
     if(horizontal) {
       g.offset <- lapply(x, function(a) swarmy(x = a, y = rep(0, length(a)), 
           cex = sizeMultiplier, side = side, priority = priority,
-          fast = fast, compact = compact)$y)
+          fast = fast, compact = compact, epsilon = epsilon)$y)
     } else {
       g.offset <- lapply(x, function(a) swarmx(x = rep(0, length(a)), y = a, 
           cex = sizeMultiplier, side = side, priority = priority,
-          fast = fast, compact = compact)$x)
+          fast = fast, compact = compact, epsilon = epsilon)$x)
     }
     d.pos <- x
   } else {          ####   non-swarm methods
@@ -402,7 +403,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 }
 
 
-.calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
+.calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending", epsilon = 0) {
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
 
@@ -428,8 +429,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   #### place the points
   if(nrow(out) > 1) {
     for (iter in 1:nrow(out)) {          ## we will place one point at a time
-      i <- which.min(abs(out$y.best))    ## Choose a point that can be placed
-                                         ## close to non-data axis
+      min_abs = min(abs(out$y.best))
+      ## Choose a point that can be placed close to non-data axis
+      i <- min(which(abs(out$y.best) <= min_abs + epsilon))
       xi <- out$x[i]
       yi <- out$y[i] <- out$y.best[i]
       out$placed[i] <- TRUE
@@ -461,7 +463,8 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 
 
 .calculateSwarmUsingC <- function(x, dsize, gsize, side = 0L, priority = "ascending",
-    compact = FALSE) {
+    compact = FALSE, epsilon = 0) {
+  print(x)
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
 
@@ -489,11 +492,12 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
                n = n,
                compact = as.logical(compact),
                side = as.integer(side),
+               epsilon = epsilon,
                placed = integer(n),         # used internally by C implementations
                workspace = numeric(n * 4),  # used internally by C implementations
                y = numeric(n))
   y <- rep(NA, length(x))
-  y[out$index] <- result[[7]] * gsize
+  y[out$index] <- result[[8]] * gsize
   y
 }
 
@@ -505,7 +509,10 @@ swarmx <- function(x, y,
     log = NULL, cex = par("cex"), side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    compact = FALSE) { 
+    compact = FALSE,
+    epsilon = 0) { 
+  stopifnot(is.numeric(epsilon))
+  stopifnot(!is.na(epsilon))
   priority <- match.arg(priority)
   if(is.null(log)) 
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
@@ -517,11 +524,16 @@ swarmx <- function(x, y,
   if(ylog) xy$y <- log10(xy$y)
   if (fast) {
     x.new <- xy$x + .calculateSwarmUsingC(xy$y, dsize = ysize * cex,
-      gsize = xsize * cex, side = side, priority = priority, compact = compact)
+      gsize = xsize * cex, side = side, priority = priority, compact = compact,
+      epsilon = epsilon)
   } else {
-    swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    x.new <- xy$x + swarmFn(xy$y, dsize = ysize * cex, gsize = xsize * cex,
-      side = side, priority = priority)
+    if(compact){
+      x.new <- xy$x + .calculateCompactSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex,
+        side = side, priority = priority, epsilon = epsilon)
+    } else {
+      x.new <- xy$x + .calculateSwarm(xy$y, dsize = ysize * cex, gsize = xsize * cex,
+        side = side, priority = priority)
+    }
   }
   out <- data.frame(x = x.new, y = y)
   if(xlog) out$x <- 10 ^ out$x
@@ -535,7 +547,10 @@ swarmy <- function(x, y,
     log = NULL, cex = par("cex"), side = 0L, 
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    compact = FALSE) { 
+    compact = FALSE,
+    epsilon = 0) { 
+  stopifnot(is.numeric(epsilon))
+  stopifnot(!is.na(epsilon))
   priority <- match.arg(priority)
   if(is.null(log)) 
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
@@ -547,11 +562,16 @@ swarmy <- function(x, y,
   if(ylog) xy$y <- log10(xy$y)
   if (fast) {
     y.new <- xy$y + .calculateSwarmUsingC(xy$x, dsize = xsize * cex,
-      gsize = ysize * cex, side = side, priority = priority, compact = compact)
+      gsize = ysize * cex, side = side, priority = priority, compact = compact,
+      epsilon = epsilon)
   } else {
-    swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    y.new <- xy$y + swarmFn(xy$x, dsize = xsize * cex, gsize = ysize * cex,
-      side = side, priority = priority)
+    if(compact){
+      y.new <- xy$y + .calculateCompactSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex,
+        side = side, priority = priority, epsilon = epsilon)
+    } else {
+      y.new <- xy$y + .calculateSwarm(xy$x, dsize = xsize * cex, gsize = ysize * cex,
+        side = side, priority = priority)
+    }
   }
   out <- data.frame(x = x, y = y.new)
   if(ylog) out$y <- 10 ^ out$y
