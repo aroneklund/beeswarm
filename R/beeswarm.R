@@ -558,6 +558,8 @@ swarmboth <- function(which.dir,
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
 
+  currentval <- xy[[which.dir]]
+  otherval <- xy[[other.dir]]
   if (which.dir == "x") {
     dsize <- xsize * cex
     gsize <- ysize * cex
@@ -569,12 +571,20 @@ swarmboth <- function(which.dir,
   }
 
   if (fast) {
-    outvalue <- xy$y + .calculateSwarmUsingC(xy$x, dsize = dsize,
-                                          gsize = gsize, side = side, priority = priority, compact = compact)
+    outvalue <-
+      currentval +
+      .calculateSwarmUsingC(
+        otherval, dsize = dsize,
+        gsize = gsize, side = side, priority = priority, compact = compact
+      )
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    outvalue <- xy$y + swarmFn(xy$x, dsize = dsize, gsize = gsize,
-                            side = side, priority = priority)
+    outvalue <-
+      currentval +
+      swarmFn(
+        otherval, dsize = dsize, gsize = gsize,
+        side = side, priority = priority
+      )
   }
 
   if (outlog) {
