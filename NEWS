@@ -2,6 +2,7 @@ beeswarm NEWS
 
 Changes in development version
 
+- swarmx() and swarmy() can handle infinite and NA values (GitHub Issue #19)
 - Minor code simplification for swarmx and swarmy functions (internal change)
 
 

@@ -352,6 +352,35 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
       dlab = dlab, glab = glab, ...)
 }
 
+#### handle NA, positive and negative infinity so that they are considered
+#### categorically
+xToFinite <- function(x, dsize) {
+  maskInf <- is.infinite(x)
+  maskNa <- is.na(x)
+
+  values <- list()
+  if (all(maskInf | maskNa)) {
+    values$na <- -20*dsize
+    values$negInf <- -10*dsize
+    values$posInf <- 10*dsize
+  } else {
+    positions <- range(x[!maskInf], na.rm = TRUE)
+    values$na <- positions[1] - 20*dsize
+    values$negInf <- positions[1] - 10*dsize
+    values$posInf <- positions[2] + 10*dsize
+  }
+
+  if (any(maskNa)) {
+    x[maskNa] <- values$na
+  }
+  if (any(maskInf)) {
+    maskPosInf <- is.infinite(x) & !is.na(x) & x > 0
+    maskNegInf <- is.infinite(x) & !is.na(x) & x < 0
+    x[maskPosInf] <- values$posInf
+    x[maskNegInf] <- values$negInf
+  }
+  x
+}
 
 #### hidden function to do swarm layout
 .calculateSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
@@ -532,7 +561,7 @@ swarmy <- function(x, y,
   )
 }
 
-# Helper function to consolidate code from swarmx and swarmy
+#### Helper function to consolidate code from swarmx and swarmy
 swarmboth <- function(which.dir,
                       x, y,
                       xsize,
@@ -561,13 +590,13 @@ swarmboth <- function(which.dir,
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
   currentval <- xy[[which.dir]]
-  otherval <- xy[[other.dir]]
+  otherval <- xToFinite(xy[[other.dir]], dsize = dsize)
 
   if (fast) {
     outvalue <-
-      xy[[which.dir]] +
+      currentval +
       .calculateSwarmUsingC(
-        xy[[other.dir]],
+        otherval,
         dsize = dsize, gsize = gsize,
         side = side,
         priority = priority, compact = compact
@@ -575,9 +604,9 @@ swarmboth <- function(which.dir,
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
     outvalue <-
-      xy[[which.dir]] +
+      currentval +
       swarmFn(
-        xy[[other.dir]],
+        otherval,
         dsize = dsize, gsize = gsize,
         side = side, priority = priority
       )
