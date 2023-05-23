@@ -507,7 +507,7 @@ swarmx <- function(x, y,
     fast = TRUE,
     compact = FALSE) {
   swarmboth(
-    which.dir = "y",
+    which.dir = "x",
     x = x, y = y,
     xsize = xsize, ysize = ysize,
     log = log, cex = cex, side = side,
@@ -543,55 +543,50 @@ swarmboth <- function(which.dir,
                       compact) {
   stopifnot(which.dir %in% c("x", "y"))
   other.dir <- c(x = "y", y = "x")[[which.dir]]
+
   priority <- match.arg(priority)
+
+  sizes <- list(x = xsize, y = ysize)
+  dsize <- sizes[[other.dir]] * cex
+  gsize <- sizes[[which.dir]] * cex
+
   if(is.null(log)) {
-    log <-
-      paste0(
-        ifelse(par('xlog'), 'x', ''),
-        ifelse(par('ylog'), 'y', '')
-      )
+    log <- paste0(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''))
   }
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
+  outlog <- list(x = xlog, y = ylog)
   xy <- xy.coords(x = x, y = y, recycle = TRUE, log = log)
   stopifnot((length(unique(xy[[which.dir]])) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
-
   currentval <- xy[[which.dir]]
   otherval <- xy[[other.dir]]
-  if (which.dir == "x") {
-    dsize <- xsize * cex
-    gsize <- ysize * cex
-    outlog <- xlog
-  } else {
-    dsize <- ysize * cex
-    gsize <- xsize * cex
-    outlog <- ylog
-  }
 
   if (fast) {
     outvalue <-
-      currentval +
+      xy[[which.dir]] +
       .calculateSwarmUsingC(
-        otherval, dsize = dsize,
-        gsize = gsize, side = side, priority = priority, compact = compact
+        xy[[other.dir]],
+        dsize = dsize, gsize = gsize,
+        side = side,
+        priority = priority, compact = compact
       )
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
     outvalue <-
-      currentval +
+      xy[[which.dir]] +
       swarmFn(
-        otherval, dsize = dsize, gsize = gsize,
+        xy[[other.dir]],
+        dsize = dsize, gsize = gsize,
         side = side, priority = priority
       )
   }
 
-  if (outlog) {
+  out <- data.frame(x = x, y = y)
+  if (outlog[[which.dir]]) {
     outvalue <- 10 ^ outvalue
   }
-
-  out <- data.frame(x = x, y = y)
   out[[which.dir]] <- outvalue
   out
 }
