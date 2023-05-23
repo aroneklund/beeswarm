@@ -506,26 +506,13 @@ swarmx <- function(x, y,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
     compact = FALSE) {
-  priority <- match.arg(priority)
-  if(is.null(log))
-    log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
-  xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
-  ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
-  xy <- xy.coords(x = x, y = y, recycle = TRUE, log = log)
-  stopifnot((length(unique(xy$x)) <= 1))
-  if(xlog) xy$x <- log10(xy$x)
-  if(ylog) xy$y <- log10(xy$y)
-  if (fast) {
-    x.new <- xy$x + .calculateSwarmUsingC(xy$y, dsize = ysize * cex,
-      gsize = xsize * cex, side = side, priority = priority, compact = compact)
-  } else {
-    swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    x.new <- xy$x + swarmFn(xy$y, dsize = ysize * cex, gsize = xsize * cex,
-      side = side, priority = priority)
-  }
-  out <- data.frame(x = x.new, y = y)
-  if(xlog) out$x <- 10 ^ out$x
-  out
+  swarmboth(
+    which.dir = "y",
+    x = x, y = y,
+    xsize = xsize, ysize = ysize,
+    log = log, cex = cex, side = side,
+    priority = priority, fast = fast, compact = compact
+  )
 }
 
 ### jitter points vertically
@@ -536,24 +523,65 @@ swarmy <- function(x, y,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
     compact = FALSE) {
+  swarmboth(
+    which.dir = "y",
+    x = x, y = y,
+    xsize = xsize, ysize = ysize,
+    log = log, cex = cex, side = side,
+    priority = priority, fast = fast, compact = compact
+  )
+}
+
+# Helper function to consolidate code from swarmx and swarmy
+swarmboth <- function(which.dir,
+                      x, y,
+                      xsize,
+                      ysize,
+                      log, cex, side,
+                      priority = c("ascending", "descending", "density", "random", "none"),
+                      fast,
+                      compact) {
+  stopifnot(which.dir %in% c("x", "y"))
+  other.dir <- c(x = "y", y = "x")[[which.dir]]
   priority <- match.arg(priority)
-  if(is.null(log))
-    log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
+  if(is.null(log)) {
+    log <-
+      paste0(
+        ifelse(par('xlog'), 'x', ''),
+        ifelse(par('ylog'), 'y', '')
+      )
+  }
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
   xy <- xy.coords(x = x, y = y, recycle = TRUE, log = log)
-  stopifnot((length(unique(xy$y)) <= 1))
+  stopifnot((length(unique(xy[[which.dir]])) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
+
+  if (which.dir == "x") {
+    dsize <- xsize * cex
+    gsize <- ysize * cex
+    outlog <- xlog
+  } else {
+    dsize <- ysize * cex
+    gsize <- xsize * cex
+    outlog <- ylog
+  }
+
   if (fast) {
-    y.new <- xy$y + .calculateSwarmUsingC(xy$x, dsize = xsize * cex,
-      gsize = ysize * cex, side = side, priority = priority, compact = compact)
+    outvalue <- xy$y + .calculateSwarmUsingC(xy$x, dsize = dsize,
+                                          gsize = gsize, side = side, priority = priority, compact = compact)
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    y.new <- xy$y + swarmFn(xy$x, dsize = xsize * cex, gsize = ysize * cex,
-      side = side, priority = priority)
+    outvalue <- xy$y + swarmFn(xy$x, dsize = dsize, gsize = gsize,
+                            side = side, priority = priority)
   }
-  out <- data.frame(x = x, y = y.new)
-  if(ylog) out$y <- 10 ^ out$y
+
+  if (outlog) {
+    outvalue <- 10 ^ outvalue
+  }
+
+  out <- data.frame(x = x, y = y)
+  out[[which.dir]] <- outvalue
   out
 }
