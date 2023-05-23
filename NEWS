@@ -1,5 +1,10 @@
 beeswarm NEWS
 
+Changes in development version
+
+- swarmx() and swarmy() can handle infinite and NA values (GitHub Issue #19)
+- Minor code simplification for swarmx and swarmy functions (internal change)
+
 
 Changes in version 0.4.0 (2021-05-07)
 
@@ -11,7 +16,7 @@ Changes in version 0.4.0 (2021-05-07)
 
 Changes in version 0.3.1 (2021-03-06)
 
-- Fixed bug where non-varying input (a single value, or a single value repeated) in non-swarm methods would yield NAs (thanks raredd). (GitHub Issue #8) 
+- Fixed bug where non-varying input (a single value, or a single value repeated) in non-swarm methods would yield NAs (thanks raredd). (GitHub Issue #8)
 - Updated email and URL in DESCRIPTION.
 
 
@@ -53,7 +58,7 @@ Changes in version 0.1.7 (2014-08-05)
 
 Changes in version 0.1.6 (2013-09-18)
 
-- The argument "labels" now gets recycled. 
+- The argument "labels" now gets recycled.
 - "labels = NULL" is now the same as missing "labels"; i.e. labels are inferred from data.
 - There is now a "corralWidth" argument to control the size of corrals, if corrals are used.
 
@@ -90,7 +95,7 @@ Changes in version 0.1.1 (2011-08-04)
 
 Changes in version 0.1.0 (2011-08-03)
 
-- In "beeswarm", defaults for "col", "pch" are now taken from "par", and "bg" defaults to NA, and "pwbg" defaults to NULL. 
+- In "beeswarm", defaults for "col", "pch" are now taken from "par", and "bg" defaults to NA, and "pwbg" defaults to NULL.
 - Renamed "smile" method; now it is called "swarm"
 - Changed default method to "swarm"
 - Removed function "smile"
