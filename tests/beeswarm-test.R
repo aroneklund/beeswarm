@@ -34,3 +34,7 @@ set.seed(1)
 test_swarms(rnorm(250) / 100)
 test_swarms(numeric(10))
 test_swarms(1:10)
+
+# Ensure no error with infinite values (GitHub issue #19)
+stopifnot(any(swarmx(x = rep(1, 5), y = c(rep(-Inf, 3), 0, 1))$x > 1))
+stopifnot(any(swarmy(x = c(rep(-Inf, 3), 0, 1), y = rep(1, 5))$y > 1))
