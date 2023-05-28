@@ -497,6 +497,35 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   y
 }
 
+#### handle NA, positive and negative infinity so that they are considered
+#### categorically
+xToFinite <- function(x, dsize) {
+  maskInf <- is.infinite(x)
+  maskNa <- is.na(x)
+
+  values <- list()
+  if (all(maskInf | maskNa)) {
+    values$na <- -20*dsize
+    values$negInf <- -10*dsize
+    values$posInf <- 10*dsize
+  } else {
+    positions <- range(x[!maskInf], na.rm = TRUE)
+    values$na <- positions[1] - 20*dsize
+    values$negInf <- positions[1] - 10*dsize
+    values$posInf <- positions[2] + 10*dsize
+  }
+
+  if (any(maskNa)) {
+    x[maskNa] <- values$na
+  }
+  if (any(maskInf)) {
+    maskPosInf <- is.infinite(x) & !is.na(x) & x > 0
+    maskNegInf <- is.infinite(x) & !is.na(x) & x < 0
+    x[maskPosInf] <- values$posInf
+    x[maskNegInf] <- values$negInf
+  }
+  x
+}
 
 ### jitter points horizontally
 swarmx <- function(x, y,
@@ -515,12 +544,16 @@ swarmx <- function(x, y,
   stopifnot((length(unique(xy$x)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
+
+  dsize <- ysize * cex
+  otherval <- xToFinite(xy$y, dsize = dsize)
+
   if (fast) {
-    x.new <- xy$x + .calculateSwarmUsingC(xy$y, dsize = ysize * cex,
+    x.new <- xy$x + .calculateSwarmUsingC(otherval, dsize = dsize,
       gsize = xsize * cex, side = side, priority = priority, compact = compact)
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    x.new <- xy$x + swarmFn(xy$y, dsize = ysize * cex, gsize = xsize * cex,
+    x.new <- xy$x + swarmFn(otherval, dsize = dsize, gsize = xsize * cex,
       side = side, priority = priority)
   }
   out <- data.frame(x = x.new, y = y)
@@ -545,12 +578,16 @@ swarmy <- function(x, y,
   stopifnot((length(unique(xy$y)) <= 1))
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
+
+  dsize <- xsize * cex
+  otherval <- xToFinite(xy$x, dsize = dsize)
+
   if (fast) {
-    y.new <- xy$y + .calculateSwarmUsingC(xy$x, dsize = xsize * cex,
+    y.new <- xy$y + .calculateSwarmUsingC(otherval, dsize = dsize,
       gsize = ysize * cex, side = side, priority = priority, compact = compact)
   } else {
     swarmFn <- ifelse(compact, .calculateCompactSwarm, .calculateSwarm)
-    y.new <- xy$y + swarmFn(xy$x, dsize = xsize * cex, gsize = ysize * cex,
+    y.new <- xy$y + swarmFn(otherval, dsize = dsize, gsize = ysize * cex,
       side = side, priority = priority)
   }
   out <- data.frame(x = x, y = y.new)
