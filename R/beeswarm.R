@@ -3,30 +3,30 @@
 # Aron Charles Eklund
 #
 # A part of the "beeswarm" R package
-# 
+#
 
 
-beeswarm <- function (x, ...) 
+beeswarm <- function (x, ...)
   UseMethod("beeswarm")
 
 
 ## here x should be a list or data.frame or numeric
-beeswarm.default <- function(x, 
+beeswarm.default <- function(x,
     method = c("swarm", "compactswarm", "center", "hex", "square"),
-    vertical = TRUE, horizontal = !vertical, 
+    vertical = TRUE, horizontal = !vertical,
     cex = 1, spacing = 1, breaks = NULL,
-    labels, at = NULL, 
+    labels, at = NULL,
     corral = c("none", "gutter", "wrap", "random", "omit"),
-    corralWidth, side = 0L, 
+    corralWidth, side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    pch = par("pch"), col = par("col"), bg = NA, 
+    pch = par("pch"), col = par("col"), bg = NA,
     pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
-    do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE, 
+    do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE,
     xlim = NULL, ylim = NULL, dlim = NULL, glim = NULL,
     xlab = NULL, ylab = NULL, dlab = "", glab = "",
     ...) {
-    
+
   method <- match.arg(method)
   corral <- match.arg(corral)
   priority <- match.arg(priority)
@@ -54,13 +54,13 @@ beeswarm.default <- function(x,
     labels <- rep(labels, length.out = n.groups)
   }
 
-  if (is.null(at)) 
+  if (is.null(at))
     at <- 1:n.groups
-  else if (length(at) != n.groups) 
-    stop(gettextf("'at' must have length equal to %d, the number of groups", 
+  else if (length(at) != n.groups)
+    stop(gettextf("'at' must have length equal to %d, the number of groups",
       n.groups), domain = NA)
 
-  if (is.null(dlab)) 
+  if (is.null(dlab))
      dlab <- deparse(substitute(x))
 
   ## this function returns a "group" vector, to complement "unlist"
@@ -70,10 +70,10 @@ beeswarm.default <- function(x,
   x.gp <- unlistGroup(x, nms = labels)
   if((range(x.val, finite = TRUE)[1] <= 0) && log)
     warning('values <= 0 omitted from logarithmic plot')
-  
+
   n.obs <- length(x.val)
   n.obs.per.group <- lengths(x)
-  
+
   #### Resolve xlim, ylim, dlim, xlab, ylab
   if(is.null(dlim)) {
       if(log) {
@@ -90,35 +90,35 @@ beeswarm.default <- function(x,
     stop ("'glim' must have length 2")
   }
   if(horizontal) {        ## plot is horizontal
-    if(is.null(ylim)) 
+    if(is.null(ylim))
       ylim <- glim
     if(is.null(xlim)) {
       xlim <- dlim
     } else {
       dlim <- xlim
     }
-    if (is.null(xlab)) 
+    if (is.null(xlab))
       xlab <- dlab
-    if (is.null(ylab)) 
+    if (is.null(ylab))
       ylab <- glab
   } else {                ## plot is vertical
-    if(is.null(xlim)) 
+    if(is.null(xlim))
       xlim <- glim
     if(is.null(ylim)) {
       ylim <- dlim
     } else {
       dlim <- ylim
     }
-    if (is.null(ylab)) 
+    if (is.null(ylab))
       ylab <- dlab
-    if (is.null(xlab)) 
+    if (is.null(xlab))
       xlab <- glab
   }
   if(length(xlim) != 2)
     stop ("'xlim' must have length 2")
   if(length(ylim) != 2)
     stop ("'ylim' must have length 2")
-  
+
   #### Resolve plotting characters and colors
   if(is.null(pwpch)) {
     pch.out <- unlistGroup(x, nms = rep(pch, length.out = n.groups))
@@ -158,7 +158,7 @@ beeswarm.default <- function(x,
     }
   }
   stopifnot(length(bg.out) == n.obs)
- 
+
    if(is.null(pwcex)) {
     cex.out <- unlistGroup(x, nms = rep(1, length.out = n.groups))
   } else {
@@ -171,11 +171,11 @@ beeswarm.default <- function(x,
     }
   }
   stopifnot(length(cex.out) == n.obs)
- 
+
   #### Set up the plot
   if(do.plot & !add) {
-    plot(xlim, ylim, 
-      type = 'n', axes = FALSE, 
+    plot(xlim, ylim,
+      type = 'n', axes = FALSE,
       log = ifelse(log, ifelse(horizontal, 'x', 'y'), ''),
       xlab = xlab, ylab = ylab, ...)
   }
@@ -189,23 +189,23 @@ beeswarm.default <- function(x,
     size.g <- xinch(0.08, warn.log = FALSE) * sizeMultiplier
     size.d <- yinch(0.08, warn.log = FALSE) * sizeMultiplier
   }
-  
-  ##### Calculate point positions g.pos, d.pos 
+
+  ##### Calculate point positions g.pos, d.pos
   if(method %in% c('swarm', 'compactswarm')) {
     compact <- method == 'compactswarm'
     if(horizontal) {
-      g.offset <- lapply(x, function(a) swarmy(x = a, y = rep(0, length(a)), 
+      g.offset <- lapply(x, function(a) swarmy(x = a, y = rep(0, length(a)),
           cex = sizeMultiplier, side = side, priority = priority,
           fast = fast, compact = compact)$y)
     } else {
-      g.offset <- lapply(x, function(a) swarmx(x = rep(0, length(a)), y = a, 
+      g.offset <- lapply(x, function(a) swarmx(x = rep(0, length(a)), y = a,
           cex = sizeMultiplier, side = side, priority = priority,
           fast = fast, compact = compact)$x)
     }
     d.pos <- x
   } else {          ####   non-swarm methods
     ##### first determine positions along the data axis
-      if(method == 'hex') size.d <- size.d * sqrt(3) / 2  
+      if(method == 'hex') size.d <- size.d * sqrt(3) / 2
       if(log) {              ## if data axis IS on a log scale
         if(is.null(breaks))
           breaks <- 10 ^ seq(log10(dlim[1]), log10(dlim[2]) + size.d, by = size.d)
@@ -215,7 +215,7 @@ beeswarm.default <- function(x,
         } else {
           mids <- 10 ^ ((log10(head(breaks, -1)) + log10(tail(breaks, -1))) / 2)
           d.index <- lapply(x, cut, breaks = breaks, labels = FALSE, include.lowest = TRUE)
-          d.pos <- lapply(d.index, function(a) mids[a])  
+          d.pos <- lapply(d.index, function(a) mids[a])
         }
       } else {               ## if data axis is NOT on a log scale
         if(is.null(breaks))
@@ -226,12 +226,12 @@ beeswarm.default <- function(x,
         } else {
           mids <- (head(breaks, -1) + tail(breaks, -1)) / 2
           d.index <- lapply(x, cut, breaks = breaks, labels = FALSE, include.lowest = TRUE)
-          d.pos <- lapply(d.index, function(a) mids[a])  
+          d.pos <- lapply(d.index, function(a) mids[a])
         }
-      }  
+      }
     ##### now determine positions along the group axis
       x.index <- lapply(d.index, function(v) {
-        if(length(na.omit(v)) == 0) 
+        if(length(na.omit(v)) == 0)
           return(v)
         v.s <- lapply(split(v, v), seq_along)
         if(method %in% c('center', 'square') && side == -1)
@@ -256,8 +256,8 @@ beeswarm.default <- function(x,
           }
         }
         unsplit(v.s, v)
-      }) 
-      
+      })
+
       g.offset <- lapply(1:n.groups, function(i) x.index[[i]] * size.g)
   }                   ###### end of non-swarm methods
 
@@ -284,7 +284,7 @@ beeswarm.default <- function(x,
       } else {
         g.offset <- lapply(g.offset, function(zz) ((zz - corralLo) %% corralWidth) + corralLo)
       }
-    }  
+    }
     if(corral == 'random') {
       g.offset <- lapply(g.offset, function(zz) ifelse(zz > corralHi | zz < corralLo, yes = runif(length(zz), corralLo, corralHi), no = zz))
     }
@@ -292,24 +292,24 @@ beeswarm.default <- function(x,
       g.offset <- lapply(g.offset, function(zz) ifelse(zz > corralHi | zz < corralLo, yes = NA, no = zz))
     }
   }
-  
+
   g.pos <- lapply(1:n.groups, function(i) at[i] + g.offset[[i]])
 
-  out <- data.frame(x = unlist(g.pos), y = unlist(d.pos), 
+  out <- data.frame(x = unlist(g.pos), y = unlist(d.pos),
                     pch = pch.out, col = col.out, bg = bg.out, cex = cex * cex.out,
                     x.orig = x.gp, y.orig = x.val,
                     stringsAsFactors = FALSE)
 
   if(do.plot) {
     if(horizontal) {     ## plot is horizontal
-      points(out$y, out$x, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)  
+      points(out$y, out$x, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)
       if(axes & !add) {
         axis(1, ...)
         axis(2, at = at, labels = labels, tick = FALSE, ...)
         box(...)
       }
     } else {             ## plot is vertical
-      points(out$x, out$y, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)  
+      points(out$x, out$y, pch = out$pch, col = out$col, bg = out$bg, cex = out$cex)
       if(axes & !add) {
         axis(2, ...)
         axis(1, at = at, labels = labels, tick = FALSE, ...)
@@ -320,15 +320,15 @@ beeswarm.default <- function(x,
   invisible(out)
 }
 
-   
-  
-beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL, 
-    pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, ...) 
+
+
+beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
+    pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, ...)
 {
-    if (missing(formula) || (length(formula) != 3)) 
+    if (missing(formula) || (length(formula) != 3))
         stop("'formula' missing or incorrect")
     m <- match.call(expand.dots = FALSE)
-    if (is.matrix(eval(m$data, parent.frame()))) 
+    if (is.matrix(eval(m$data, parent.frame())))
         m$data <- as.data.frame(data)
     m$... <- NULL
     m$dlab <- NULL
@@ -337,9 +337,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
     m[[1]] <- as.name("model.frame")
     mf <- eval(m, parent.frame())
     response <- attr(attr(mf, "terms"), "response")
-    if (missing(dlab)) 
+    if (missing(dlab))
         dlab <- names(mf)[response]
-    if (missing(glab)) 
+    if (missing(glab))
         glab <- as.character(formula)[3]
     f <- mf[-response]
     f <- f[names(f) %in% attr(attr(mf, "terms"), "term.labels")]
@@ -347,7 +347,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
     if(!is.null(mf$'(pwcol)')) pwcol <- split(mf$'(pwcol)', f)
     if(!is.null(mf$'(pwbg)')) pwbg <- split(mf$'(pwbg)',f)
     if(!is.null(mf$'(pwcex)')) pwcex <- split(mf$'(pwcex)',f)
-    beeswarm(split(mf[[response]], f), 
+    beeswarm(split(mf[[response]], f),
       pwpch = pwpch, pwcol = pwcol, pwbg = pwbg, pwcex = pwcex,
       dlab = dlab, glab = glab, ...)
 }
@@ -358,7 +358,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
   if(length(x) == 0) return(numeric(0))
   stopifnot(side %in% -1:1)
   out <- data.frame(x = x / dsize, y = 0, index = seq_along(x))
-  
+
   #### Determine the order in which points will be placed
   if(     priority == "ascending" ) { out <- out[order( out$x), ] } ## default "smile"
   else if(priority == "descending") { out <- out[order(-out$x), ] } ## frown
@@ -382,7 +382,7 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
         pre.x <- out[isPotOverlap, 'x']
         pre.y <- out[isPotOverlap, 'y']
         poty.off <- sqrt(1 - ((xi - pre.x) ^ 2))         ## potential y offsets
-        poty <- switch(side + 2, 
+        poty <- switch(side + 2,
           c(0, pre.y - poty.off),
           c(0, pre.y + poty.off, pre.y - poty.off),
           c(0, pre.y + poty.off)
@@ -499,15 +499,15 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 
 
 ### jitter points horizontally
-swarmx <- function(x, y, 
-    xsize = xinch(0.08, warn.log = FALSE), 
+swarmx <- function(x, y,
+    xsize = xinch(0.08, warn.log = FALSE),
     ysize = yinch(0.08, warn.log = FALSE),
-    log = NULL, cex = par("cex"), side = 0L, 
+    log = NULL, cex = par("cex"), side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    compact = FALSE) { 
+    compact = FALSE) {
   priority <- match.arg(priority)
-  if(is.null(log)) 
+  if(is.null(log))
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
@@ -529,15 +529,15 @@ swarmx <- function(x, y,
 }
 
 ### jitter points vertically
-swarmy <- function(x, y, 
-    xsize = xinch(0.08, warn.log = FALSE), 
+swarmy <- function(x, y,
+    xsize = xinch(0.08, warn.log = FALSE),
     ysize = yinch(0.08, warn.log = FALSE),
-    log = NULL, cex = par("cex"), side = 0L, 
+    log = NULL, cex = par("cex"), side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    compact = FALSE) { 
+    compact = FALSE) {
   priority <- match.arg(priority)
-  if(is.null(log)) 
+  if(is.null(log))
     log <- paste(ifelse(par('xlog'), 'x', ''), ifelse(par('ylog'), 'y', ''), sep = '')
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
