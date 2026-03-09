@@ -33,7 +33,9 @@ beeswarm.default <- function(x,
   if(length(cex) > 1) {
     stop('the parameter "cex" must have length 1')
   }
-  stopifnot(side %in% -1:1)
+  if(!(side %in% -1:1)) {
+    stop('"side" must be one of -1, 0, or 1')
+  }
   if(is.numeric(x)) {
     x <- list(x)
   }
@@ -125,55 +127,71 @@ beeswarm.default <- function(x,
   } else {
     if(is.list(pwpch)) {
       names(pwpch) <- names(x)
-      stopifnot(all(sapply(pwpch, length) == n.obs.per.group))
+      if(!all(lengths(pwpch) == n.obs.per.group)) {
+        stop('"pwpch" list elements must have lengths matching their groups')
+      }
       pch.out <- unlist(pwpch)
     } else {
       pch.out <- pwpch
     }
   }
-  stopifnot(length(pch.out) == n.obs)
+  if(length(pch.out) != n.obs) {
+    stop('"pwpch" (or "pch") must resolve to one value per observation')
+  }
 
   if(is.null(pwcol)) {
     col.out <- unlistGroup(x, nms = rep(col, length.out = n.groups))
   } else {
     if(is.list(pwcol)) {
       names(pwcol) <- names(x)
-      stopifnot(all(sapply(pwcol, length) == n.obs.per.group))
+      if(!all(lengths(pwcol) == n.obs.per.group)) {
+        stop('"pwcol" list elements must have lengths matching their groups')
+      }
       col.out <- unlist(pwcol)
     } else {
       col.out <- pwcol
     }
   }
-  stopifnot(length(col.out) == n.obs)
+  if(length(col.out) != n.obs) {
+    stop('"pwcol" (or "col") must resolve to one value per observation')
+  }
 
   if(is.null(pwbg)) {
     bg.out <- unlistGroup(x, nms = rep(bg, length.out = n.groups))
   } else {
     if(is.list(pwbg)) {
       names(pwbg) <- names(x)
-      stopifnot(all(sapply(pwbg, length) == n.obs.per.group))
+      if(!all(lengths(pwbg) == n.obs.per.group)) {
+        stop('"pwbg" list elements must have lengths matching their groups')
+      }
       bg.out <- unlist(pwbg)
     } else {
       bg.out <- pwbg
     }
   }
-  stopifnot(length(bg.out) == n.obs)
+  if(length(bg.out) != n.obs) {
+    stop('"pwbg" (or "bg") must resolve to one value per observation')
+  }
  
    if(is.null(pwcex)) {
     cex.out <- unlistGroup(x, nms = rep(1, length.out = n.groups))
   } else {
     if(is.list(pwcex)) {
       names(pwcex) <- names(x)
-      stopifnot(all(sapply(pwcex, length) == n.obs.per.group))
+      if(!all(lengths(pwcex) == n.obs.per.group)) {
+        stop('"pwcex" list elements must have lengths matching their groups')
+      }
       cex.out <- unlist(pwcex)
     } else {
       cex.out <- pwcex
     }
   }
-  stopifnot(length(cex.out) == n.obs)
+  if(length(cex.out) != n.obs) {
+    stop('"pwcex" must resolve to one value per observation')
+  }
  
   #### Set up the plot
-  if(do.plot & !add) {
+  if(do.plot && !add) {
     plot(xlim, ylim, 
       type = 'n', axes = FALSE, 
       log = ifelse(log, ifelse(horizontal, 'x', 'y'), ''),
@@ -270,8 +288,12 @@ beeswarm.default <- function(x,
         corralWidth <- 2 * (min(diff(c(par('usr')[1], at, par('usr')[2]))) - size.g)
       }
     } else {
-      stopifnot(length(corralWidth) == 1)
-      stopifnot(corralWidth > 0)
+      if(length(corralWidth) != 1) {
+        stop('"corralWidth" must have length 1')
+      }
+      if(!is.finite(corralWidth) || corralWidth <= 0) {
+        stop('"corralWidth" must be a finite number greater than 0')
+      }
     }
     corralLo <- (side - 1) * corralWidth / 2
     corralHi <- (side + 1) * corralWidth / 2
@@ -356,7 +378,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 #### hidden function to do swarm layout
 .calculateSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
   if(length(x) == 0) return(numeric(0))
-  stopifnot(side %in% -1:1)
+  if(!(side %in% -1:1)) {
+    stop('"side" must be one of -1, 0, or 1')
+  }
   out <- data.frame(x = x / dsize, y = 0, index = seq_along(x))
   
   #### Determine the order in which points will be placed
@@ -404,7 +428,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 
 .calculateCompactSwarm <- function(x, dsize, gsize, side = 0L, priority = "ascending") {
   if(length(x) == 0) return(numeric(0))
-  stopifnot(side %in% -1:1)
+  if(!(side %in% -1:1)) {
+    stop('"side" must be one of -1, 0, or 1')
+  }
 
   ## out$y.low: best permitted position <= 0 for each point
   ## out$y.high: best permitted position >= 0 for each point
@@ -463,7 +489,9 @@ beeswarm.formula <- function (formula, data = NULL, subset, na.action = NULL,
 .calculateSwarmUsingC <- function(x, dsize, gsize, side = 0L, priority = "ascending",
     compact = FALSE) {
   if(length(x) == 0) return(numeric(0))
-  stopifnot(side %in% -1:1)
+  if(!(side %in% -1:1)) {
+    stop('"side" must be one of -1, 0, or 1')
+  }
 
   out <- data.frame(x = x / dsize, index = seq_along(x))
 
@@ -512,7 +540,9 @@ swarmx <- function(x, y,
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
   xy <- xy.coords(x = x, y = y, recycle = TRUE, log = log)
-  stopifnot((length(unique(xy$x)) <= 1))
+  if(length(unique(xy$x)) > 1) {
+    stop('"swarmx" requires all "x" values to be identical')
+  }
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
   if (fast) {
@@ -542,7 +572,9 @@ swarmy <- function(x, y,
   xlog <- 'x' %in% strsplit(log, NULL)[[1L]]
   ylog <- 'y' %in% strsplit(log, NULL)[[1L]]
   xy <- xy.coords(x = x, y = y, recycle = TRUE, log = log)
-  stopifnot((length(unique(xy$y)) <= 1))
+  if(length(unique(xy$y)) > 1) {
+    stop('"swarmy" requires all "y" values to be identical')
+  }
   if(xlog) xy$x <- log10(xy$x)
   if(ylog) xy$y <- log10(xy$y)
   if (fast) {

@@ -24,8 +24,6 @@ remotes::install_github("aroneklund/beeswarm")
 
 * [**ggbeeswarm**](https://cran.r-project.org/package=ggbeeswarm)
 bee swarm and related plots in the ggplot2 framework
-* [**pybeeswarm**](https://github.com/mgymrek/pybeeswarm)
-bee swarm plots in Python
 
 ## It's also known as a dot plot
 
