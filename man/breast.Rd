@@ -31,7 +31,7 @@ Lancet. 2005 Feb 19-25;365(9460):671-9.
 \examples{
   data(breast)
 
-  with(breast, 
+  with(breast,
     plot(ESR1, ERBB2, col = as.numeric(ER))
   )
 }

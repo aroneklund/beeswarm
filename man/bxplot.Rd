@@ -18,7 +18,7 @@ bxplot(x, \dots)
 
 \method{bxplot}{default}(x, probs = c(0.25, 0.5, 0.75),
     vertical = TRUE, horizontal = !vertical, add = FALSE,
-    col = par("col"), lty = par("lty"), lwd = NULL, 
+    col = par("col"), lty = par("lty"), lwd = NULL,
     at = NULL, width = 0.75, \dots)
 }
 
@@ -57,16 +57,16 @@ If \code{lwd} is \code{NULL}, and if the \code{probs} includes 0.5, \code{lwd} w
   ## bxplot on bottom
   beeswarm(len ~ dose, data = ToothGrowth)
   bxplot(len ~ dose, data = ToothGrowth, add = TRUE)
-  
+
   ## bxplot on top
   bxplot(decrease ~ treatment, data = OrchardSprays, probs = 0.5, col = 2)
   beeswarm(decrease ~ treatment, data = OrchardSprays, add = TRUE)
 
-  ## Show deciles 
+  ## Show deciles
   data(breast)
-  bxplot(time_survival ~ event_survival, data = breast, 
+  bxplot(time_survival ~ event_survival, data = breast,
     probs = seq(0, 1, by = 0.1), col = rainbow(10))
-  beeswarm(time_survival ~ event_survival, data = breast, 
+  beeswarm(time_survival ~ event_survival, data = breast,
     pch = 21, bg = "gray75", add = TRUE)
 }
 

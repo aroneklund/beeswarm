@@ -6,25 +6,25 @@
 
 \title{Bee swarm plot}
 \description{
-Create a bee swarm plot.  A bee swarm plot is a one-dimensional scatter plot similar to \code{\link{stripchart}}, but with various methods to separate coincident points such that each point is visible.  Also, \code{beeswarm} introduces additional features unavailable in \code{stripchart}, such as the ability to control the color and plotting character of each point. 
+Create a bee swarm plot.  A bee swarm plot is a one-dimensional scatter plot similar to \code{\link{stripchart}}, but with various methods to separate coincident points such that each point is visible.  Also, \code{beeswarm} introduces additional features unavailable in \code{stripchart}, such as the ability to control the color and plotting character of each point.
 }
 
 \usage{
 beeswarm(x, \dots)
 
-\method{beeswarm}{formula}(formula, data = NULL, subset, na.action = NULL, 
+\method{beeswarm}{formula}(formula, data = NULL, subset, na.action = NULL,
          pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL, dlab, glab, \dots)
 
-\method{beeswarm}{default}(x, 
-    method = c("swarm", "compactswarm", "center", "hex", "square"), 
-    vertical = TRUE, horizontal = !vertical, 
+\method{beeswarm}{default}(x,
+    method = c("swarm", "compactswarm", "center", "hex", "square"),
+    vertical = TRUE, horizontal = !vertical,
     cex = 1, spacing = 1, breaks = NULL,
-    labels, at = NULL, 
+    labels, at = NULL,
     corral = c("none", "gutter", "wrap", "random", "omit"),
-    corralWidth, side = 0L, 
+    corralWidth, side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE,
-    pch = par("pch"), col = par("col"), bg = NA, 
+    pch = par("pch"), col = par("col"), bg = NA,
     pwpch = NULL, pwcol = NULL, pwbg = NULL, pwcex = NULL,
     do.plot = TRUE, add = FALSE, axes = TRUE, log = FALSE,
     xlim = NULL, ylim = NULL, dlim = NULL, glim = NULL,
@@ -69,14 +69,14 @@ beeswarm(x, \dots)
   \item{\dots}{ Further arguments passed to \code{\link{plot}}. }
 }
 
-\details{ 
-Several methods for placing the points are available; each method uses a different algorithm to avoid overlapping points. 
+\details{
+Several methods for placing the points are available; each method uses a different algorithm to avoid overlapping points.
 
 The default method, \code{swarm}, places points in increasing order. If a point would overlap an existing point, it is shifted sideways (along the group axis) by a minimal amount sufficient to avoid overlap. With this method \code{breaks} is ignored.
 
 The methods \code{square}, \code{hex}, and \code{center} do the same thing, but they first discretize the values along the continuous data axis, in order to enable more efficient packing: \code{square} places the points on a square grid, \code{hex} uses a hexagonal grid, and \code{center} uses a centered square grid. By default, the number of breakpoints for discretization is determined by a combination of the available plotting area and the plotting character size. The discretization of the data can be explicitly controlled using \code{breaks}. If \code{breaks} is set to \code{NA}, the data will not be grouped into intervals; this may be a sensible option if the data is already discrete. NOTE that these three methods adjust the data to fit into a grid, and therefore the resulting plots should be intepreted with this in mind.
 
-In contrast to most other plotting functions, changing the size of the graphics device will often change the position of the points.  
+In contrast to most other plotting functions, changing the size of the graphics device will often change the position of the points.
 
 The plotting characters and colors can be controlled in two ways. First, the arguments \code{pch}, \code{col} and \code{bg} can specify plotting characters and colors in the same way as \code{\link{stripchart}} and \code{\link{boxplot}}: in short, the arguments apply to each group as a whole (and are recycled if necessary).
 
@@ -97,18 +97,18 @@ Whereas the \code{"swarm"} method places points in a predetermined order, the \c
 
 \seealso{ \code{\link{stripchart}}, \code{\link{boxplot}} }
 
-\examples{ 
-  
+\examples{
+
   ## One of the examples from 'stripchart'
   beeswarm(decrease ~ treatment,
-    data = OrchardSprays, log = TRUE, 
+    data = OrchardSprays, log = TRUE,
     pch = 16, col = rainbow(8))
 
   ## One of the examples from 'boxplot', with a beeswarm overlay
    boxplot(len ~ dose, data = ToothGrowth,
               main = "Guinea Pigs' Tooth Growth",
               xlab = "Vitamin C dose mg",
-              ylab = "Tooth length")  
+              ylab = "Tooth length")
    beeswarm(len ~ dose, data = ToothGrowth, col = 2, add = TRUE)
 
   ## Compare the 5 methods
@@ -128,63 +128,63 @@ Whereas the \code{"swarm"} method places points in a predetermined order, the \c
     title = "Censored", pch = 16, col = 1:2)
 
   ## The list interface
-  distributions <- list(runif = runif(200, min = -3, max = 3), 
+  distributions <- list(runif = runif(200, min = -3, max = 3),
                         rnorm = rnorm(200),
                         rlnorm = rlnorm(200, sdlog = 0.5))
   beeswarm(distributions, col = 2:4)
 
-  ## Demonstrate 'pwcol' with the list interface 
+  ## Demonstrate 'pwcol' with the list interface
   myCol <- lapply(distributions, function(x) cut(x, breaks = quantile(x), labels = FALSE))
   beeswarm(distributions, pch = 16, pwcol = myCol)
   legend("bottomright", legend = 1:4, pch = 16, col = 1:4, title = "Quartile")
 
   ## Demonstrate the 'corral' methods
   par(mfrow = c(2,3))
-  beeswarm(distributions, col = 2:4, 
+  beeswarm(distributions, col = 2:4,
     main = 'corral = "none" (default)')
-  beeswarm(distributions, col = 2:4, corral = "gutter", 
+  beeswarm(distributions, col = 2:4, corral = "gutter",
     main = 'corral = "gutter"')
-  beeswarm(distributions, col = 2:4, corral = "wrap", 
+  beeswarm(distributions, col = 2:4, corral = "wrap",
     main = 'corral = "wrap"')
-  beeswarm(distributions, col = 2:4, corral = "random", 
+  beeswarm(distributions, col = 2:4, corral = "random",
     main = 'corral = "random"')
-  beeswarm(distributions, col = 2:4, corral = "omit", 
-    main = 'corral = "omit"')  
- 
+  beeswarm(distributions, col = 2:4, corral = "omit",
+    main = 'corral = "omit"')
+
   ## Demonstrate 'side' and 'priority'
   par(mfrow = c(2,3))
-  beeswarm(distributions, col = 2:4, 
+  beeswarm(distributions, col = 2:4,
     main = 'Default')
-  beeswarm(distributions, col = 2:4, side = -1, 
+  beeswarm(distributions, col = 2:4, side = -1,
     main = 'side = -1')
-  beeswarm(distributions, col = 2:4, side = 1, 
+  beeswarm(distributions, col = 2:4, side = 1,
     main = 'side = 1')
-  beeswarm(distributions, col = 2:4, priority = "descending", 
+  beeswarm(distributions, col = 2:4, priority = "descending",
     main = 'priority = "descending"')
-  beeswarm(distributions, col = 2:4, priority = "random", 
-    main = 'priority = "random"')  
-  beeswarm(distributions, col = 2:4, priority = "density", 
-    main = 'priority = "density"')  
+  beeswarm(distributions, col = 2:4, priority = "random",
+    main = 'priority = "random"')
+  beeswarm(distributions, col = 2:4, priority = "density",
+    main = 'priority = "density"')
 
   ## Demonstrate 'side' and 'priority' for compact method
   par(mfrow = c(2,3))
   beeswarm(distributions, col = 2:4, method = "compactswarm",
     main = 'Default')
-  beeswarm(distributions, col = 2:4, method = "compactswarm", side = -1, 
+  beeswarm(distributions, col = 2:4, method = "compactswarm", side = -1,
     main = 'side = -1')
-  beeswarm(distributions, col = 2:4, method = "compactswarm", side = 1, 
+  beeswarm(distributions, col = 2:4, method = "compactswarm", side = 1,
     main = 'side = 1')
   beeswarm(distributions, col = 2:4, method = "compactswarm",
     priority = "descending",  main = 'priority = "descending"')
   beeswarm(distributions, col = 2:4, method = "compactswarm",
-    priority = "random",  main = 'priority = "random"')  
+    priority = "random",  main = 'priority = "random"')
   beeswarm(distributions, col = 2:4, method = "compactswarm",
-    priority = "density",  main = 'priority = "density"')  
+    priority = "density",  main = 'priority = "density"')
 
   ## Demonstrate pwcol, pwpch, pwbg, and pwcex
-  beeswarm(mpg ~ cyl, data = mtcars, cex = 3, 
+  beeswarm(mpg ~ cyl, data = mtcars, cex = 3,
     pwcol = gear, pwbg = am + 1, pwpch = gear + 18, pwcex = hp / 335)
-  
+
 }
 
 \keyword{ hplot }

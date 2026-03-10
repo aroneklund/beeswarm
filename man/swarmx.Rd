@@ -4,16 +4,16 @@
 \title{ Adjust 1-d data to separate coincident points }
 \description{Take a series of points lying in a horizontal or vertical line, and jitter them in the other dimension such that no points are overlapping. }
 \usage{
-swarmx(x, y, 
-    xsize = xinch(0.08, warn.log = FALSE), 
+swarmx(x, y,
+    xsize = xinch(0.08, warn.log = FALSE),
     ysize = yinch(0.08, warn.log = FALSE),
-    log = NULL, cex = par("cex"), side = 0L, 
+    log = NULL, cex = par("cex"), side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE, compact = FALSE)
-swarmy(x, y, 
-    xsize = xinch(0.08, warn.log = FALSE), 
+swarmy(x, y,
+    xsize = xinch(0.08, warn.log = FALSE),
     ysize = yinch(0.08, warn.log = FALSE),
-    log = NULL, cex = par("cex"), side = 0L, 
+    log = NULL, cex = par("cex"), side = 0L,
     priority = c("ascending", "descending", "density", "random", "none"),
     fast = TRUE, compact = FALSE)
 }
@@ -27,7 +27,7 @@ swarmy(x, y,
   \item{fast}{ Use compiled version of algorithm?  This option is ignored for all methods except \code{"swarm"} and \code{"compactswarm"}.}
   \item{compact}{ Use compact layout? (see below)}
 }
-\details{ 
+\details{
 For \code{swarmx}, the input coordinates must lie in a vertical line.  For \code{swarmy}, the input coordinates must lie in a horizontal line.
 
 \code{swarmx} adjusts coordinates to the left or right; \code{swarmy} adjusts coordinates up or down.
@@ -40,7 +40,7 @@ Usually it makes sense to call this function after a plotting device has already
 }
 \value{ A data frame with columns \code{x} and \code{y} with the new coordinates. }
 \seealso{ \code{\link{beeswarm}}, \code{\link{jitter}} }
-\examples{ 
+\examples{
 
 ## Plot points in one dimension
 index <- rep(0, 100)
